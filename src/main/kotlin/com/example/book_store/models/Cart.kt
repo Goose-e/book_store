@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 
 @Table("carts")
-data class Carts(
+data class Cart(
     @Id
     @Column("cart_id")
     val cartId:Long,

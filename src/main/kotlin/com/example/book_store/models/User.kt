@@ -1,9 +1,10 @@
 package com.example.book_store.models
+import com.example.book_store.models.enum.RoleRefEnum
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 @Table("users")
-data class Users(
+data class User(
     @Id
     @Column("user_id")
     val userId:Long,
@@ -16,5 +17,5 @@ data class Users(
     @Column("user_age")
     val userAge:Int,
     @Column("user_role_id")
-    val userRoleId:Long
+    val userRoleId:RoleRefEnum
 )

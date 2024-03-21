@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.Column
 import java.math.BigDecimal
 
 @Table("orders")
-data class Orders(
+data class Order(
     @Id
     @Column("order_id")
     val orderId:Long,

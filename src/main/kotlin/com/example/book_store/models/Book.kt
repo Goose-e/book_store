@@ -1,4 +1,5 @@
 package com.example.book_store.models
+import com.example.book_store.models.enum.GenreRefEnum
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
@@ -6,12 +7,12 @@ import java.math.BigDecimal
 
 
 @Table
-data class Books(
+data class Book(
     @Id
     @Column("book_id")
     val bookId:Long,
     @Column("genre_id")
-    val genreId:Long,
+    val genreId:GenreRefEnum,
     @Column("book_publisher")
     val bookPublisher:String,
     @Column("book_price")

@@ -6,10 +6,10 @@ import org.springframework.data.relational.core.mapping.Column
 import java.math.BigDecimal
 
 @Table("order_items")
-data class OrderItems(
+data class OrderItem(
     @Id
-    @Column("order_items_id")
-    val orderItemsId:Long,
+    @Column("order_item_id")
+    val orderItemId:Long,
     @Column("book_id")
     val bookId:Long,
     @Column("order_id")
