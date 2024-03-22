@@ -30,6 +30,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     implementation("org.springframework.data:spring-data-jdbc:3.2.4")
     implementation("org.postgresql:postgresql:42.7.3")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 }
 
 tasks.withType<KotlinCompile> {

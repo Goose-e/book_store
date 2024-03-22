@@ -2,7 +2,7 @@ package com.example.book_store.models.enum
 
 import com.example.book_store.exceptions.UnknownEnumException
 
-enum class StatusRefEnum(
+enum class StatusEnum(
     private val statusId: Long,
     private val statusCode: String,
     private val statusName: String
@@ -10,7 +10,7 @@ enum class StatusRefEnum(
     ;
 
     companion object {
-        fun getEnum(statusId: Long): StatusRefEnum =
+        fun getEnum(statusId: Long): StatusEnum =
             entries.find { it.getId() == statusId } ?: throw UnknownEnumException("privilegeId = $statusId")
     }
 

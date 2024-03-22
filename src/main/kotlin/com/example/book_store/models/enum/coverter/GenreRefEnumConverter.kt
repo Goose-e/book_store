@@ -1,11 +1,11 @@
 package com.example.book_store.models.enum.coverter
 
-import com.example.book_store.models.enum.GenreRefEnum
+import com.example.book_store.models.enum.GenreEnum
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.convert.WritingConverter
 
 @WritingConverter
-class GenreRefEnumConverter:Converter<GenreRefEnum,Long> {
+class GenreRefEnumConverter:Converter<GenreEnum,Long> {
 
-    override fun convert(genreRefEnum: GenreRefEnum): Long = genreRefEnum.getId()
+    override fun convert(genreEnum: GenreEnum): Long = genreEnum.getId()
 }

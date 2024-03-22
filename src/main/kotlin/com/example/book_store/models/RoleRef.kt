@@ -1,6 +1,6 @@
 package com.example.book_store.models
 
-import com.example.book_store.models.enum.RoleRefEnum
+import com.example.book_store.models.enum.RoleEnum
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
@@ -9,9 +9,9 @@ import org.springframework.data.relational.core.mapping.Column
 data class RoleRef(
     @Id
     @Column("role_id")
-    val roleRefId:RoleRefEnum,
+    val roleId:RoleEnum,
     @Column("role_code")
-    val roleRefCode:String,
+    val roleCode:String,
     @Column("role_name")
-    val roleRefName:String
+    val roleName:String
 )

@@ -1,6 +1,6 @@
 package com.example.book_store.models
 
-import com.example.book_store.models.enum.StatusRefEnum
+import com.example.book_store.models.enum.StatusEnum
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
@@ -12,7 +12,7 @@ data class CoreEntity(
     @Column("core_entity_id")
     val coreEntityId:Long,
     @Column("status_id")
-    val statusId:StatusRefEnum,
+    val statusId:StatusEnum,
     @Column("create_date")
     val createDate:Date,
     @Column("delete_date")
