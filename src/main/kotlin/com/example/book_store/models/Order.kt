@@ -1,26 +1,26 @@
 package com.example.book_store.models
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.Table
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression.DateTime
-import org.springframework.data.relational.core.mapping.Column
-import org.springframework.data.relational.core.mapping.Table
 import java.math.BigDecimal
 
 @Entity
-@Table("orders")
+@Table(name = "orders")
 data class Order(
     @Id
-    @Column("order_id")
+    @Column(name = "order_id")
     val orderId:Long,
-    @Column("user_id")
+    @Column(name = "user_id")
     val userId:Long,
-    @Column("address")
+    @Column(name = "address")
     val address:String,
-    @Column("order_price")
+    @Column(name = "order_price")
     val orderPrice:BigDecimal,
-    @Column("order_date")
+    @Column(name = "order_date")
     val orderDate:DateTime,
-    @Column("order_code")
+    @Column(name = "order_code")
     val orderCode:String
 )

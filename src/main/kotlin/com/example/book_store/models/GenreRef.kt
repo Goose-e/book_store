@@ -1,19 +1,19 @@
 package com.example.book_store.models
 
 import com.example.book_store.models.enum.GenreEnum
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
-import org.springframework.data.relational.core.mapping.Column
-import org.springframework.data.relational.core.mapping.Table
+import jakarta.persistence.Table
 
 @Entity
-@Table("genre_ref")
+@Table(name = "genre_ref")
 data class GenreRef(
     @Id
-    @Column("genre_id")
+    @Column(name = "genre_id")
     val genreId:GenreEnum,
-    @Column("genre_code")
+    @Column(name = "genre_code")
     val genreCode:String,
-    @Column("genre_name")
+    @Column(name = "genre_name")
     val genreName:String
 )

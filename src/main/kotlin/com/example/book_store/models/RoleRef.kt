@@ -1,18 +1,19 @@
 package com.example.book_store.models
 
 import com.example.book_store.models.enum.RoleEnum
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
-import org.springframework.data.relational.core.mapping.Column
-import org.springframework.data.relational.core.mapping.Table
+import jakarta.persistence.Table
+
 @Entity
-@Table("roles_ref")
+@Table(name = "roles_ref")
 data class RoleRef(
     @Id
-    @Column("role_id")
+    @Column(name = "role_id")
     val roleId:RoleEnum,
-    @Column("role_code")
+    @Column(name = "role_code")
     val roleCode:String,
-    @Column("role_name")
+    @Column(name = "role_name")
     val roleName:String
 )

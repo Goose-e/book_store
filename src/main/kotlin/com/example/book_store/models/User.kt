@@ -1,25 +1,25 @@
 package com.example.book_store.models
 
 import com.example.book_store.models.enum.RoleEnum
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
-import org.springframework.data.relational.core.mapping.Column
-import org.springframework.data.relational.core.mapping.Table
+import jakarta.persistence.Table
 
 @Entity
-@Table("users")
+@Table(name = "users")
 data class User(
     @Id
-    @Column("user_id")
+    @Column(name = "user_id")
     val userId:Long? = null,
-    @Column("login")
+    @Column(name = "login")
     val login:String,
-    @Column("password")
+    @Column(name = "password")
     val password:String,
-    @Column("username")
+    @Column(name = "username")
     val username:String,
-    @Column("user_age")
+    @Column(name = "user_age")
     val userAge:Int,
-    @Column("user_role_id")
+    @Column(name = "user_role_id")
     val userRoleId:RoleEnum
 )

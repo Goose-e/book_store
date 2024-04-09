@@ -1,19 +1,19 @@
 package com.example.book_store.models
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
-import org.springframework.data.relational.core.mapping.Column
-import org.springframework.data.relational.core.mapping.Table
+import jakarta.persistence.Table
 
 @Entity
-@Table("cart_items")
+@Table(name = "cart_items")
 data class CartItem(
     @Id
-    @Column("cart_items_id")
+    @Column(name = "cart_items_id")
     val cartItemsId:Long,
-    @Column("book_id")
+    @Column(name = "book_id")
     val bookId:Long,
-    @Column("cart_id")
+    @Column(name = "cart_id")
     val cartId:Long,
-    @Column("cart_item_code")
+    @Column(name = "cart_item_code")
     val cartItemsCode:String
 )

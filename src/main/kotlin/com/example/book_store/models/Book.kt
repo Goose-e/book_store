@@ -1,32 +1,32 @@
 package com.example.book_store.models
 
 import com.example.book_store.models.enum.GenreEnum
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
-import org.springframework.data.relational.core.mapping.Column
-import org.springframework.data.relational.core.mapping.Table
+import jakarta.persistence.Table
 import java.math.BigDecimal
 
 @Entity
-@Table
+@Table(name = "book")
 data class Book(
     @Id
-    @Column("book_id")
+    @Column(name = "book_id")
     val bookId:Long,
-    @Column("genre_id")
+    @Column(name = "genre_id")
     val genreId:GenreEnum,
-    @Column("book_publisher")
+    @Column(name = "book_publisher")
     val bookPublisher:String,
-    @Column("book_price")
+    @Column(name = "book_price")
     val bookPrice:BigDecimal,
-    @Column("book_description")
+    @Column(name = "book_description")
     val bookDescription:String,
-    @Column("book_pages")
+    @Column(name = "book_pages")
     val bookPages:Int,
-    @Column("book_quantity")
+    @Column(name = "book_quantity")
     val bookQuantity: Int,
-    @Column("book_name")
+    @Column(name = "book_name")
     val bookName:String,
-    @Column("book_code")
+    @Column(name = "book_code")
     val bookCode:String
 )
