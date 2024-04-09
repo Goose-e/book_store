@@ -1,11 +1,13 @@
 package com.example.book_store.models
 
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression.DateTime
-import org.springframework.data.relational.core.mapping.Table
-import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.math.BigDecimal
 
+@Entity
 @Table("orders")
 data class Order(
     @Id

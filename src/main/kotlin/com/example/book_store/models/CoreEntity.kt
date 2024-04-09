@@ -1,11 +1,13 @@
 package com.example.book_store.models
 
 import com.example.book_store.models.enum.StatusEnum
-import org.springframework.data.relational.core.mapping.Table
-import org.springframework.data.annotation.Id
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import org.springframework.data.relational.core.mapping.Column
-import java.util.Date
+import org.springframework.data.relational.core.mapping.Table
+import java.util.*
 
+@Entity
 @Table("core_entities")
 data class CoreEntity(
     @Id

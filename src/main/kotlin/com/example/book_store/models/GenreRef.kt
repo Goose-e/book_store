@@ -1,10 +1,12 @@
 package com.example.book_store.models
 
 import com.example.book_store.models.enum.GenreEnum
-import org.springframework.data.relational.core.mapping.Table
-import org.springframework.data.annotation.Id
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 
+@Entity
 @Table("genre_ref")
 data class GenreRef(
     @Id

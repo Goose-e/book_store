@@ -3,7 +3,7 @@ package com.example.book_store.dto
 import java.util.UUID
 
 data class UserDto (
-    val id:UUID?=null,
+    val id:Long?=null,
     val login:String,
     val password:String,
     val username:String,

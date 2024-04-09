@@ -1,8 +1,10 @@
 package com.example.book_store.models
-import org.springframework.data.relational.core.mapping.Table
-import org.springframework.data.annotation.Id
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 
+@Entity
 @Table("cart_items")
 data class CartItem(
     @Id
