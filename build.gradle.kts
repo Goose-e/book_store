@@ -6,8 +6,13 @@ plugins {
     id("org.graalvm.buildtools.native") version "0.9.28"
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
+    kotlin("plugin.allopen") version "1.9.22"
 }
-
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.Embeddable")
+    annotation("jakarta.persistence.MappedSuperclass")
+}
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
@@ -31,6 +36,8 @@ dependencies {
     implementation("org.springframework.data:spring-data-jdbc:3.2.4")
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 }
 
 tasks.withType<KotlinCompile> {

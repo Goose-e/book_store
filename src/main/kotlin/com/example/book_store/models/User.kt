@@ -3,11 +3,13 @@ import com.example.book_store.models.enum.RoleEnum
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
+import java.util.UUID
+
 @Table("users")
 data class User(
     @Id
     @Column("user_id")
-    val userId:Long,
+    val userId:UUID,
     @Column("login")
     val login:String,
     @Column("password")

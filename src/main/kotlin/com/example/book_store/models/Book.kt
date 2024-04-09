@@ -1,10 +1,10 @@
 package com.example.book_store.models
+
 import com.example.book_store.models.enum.GenreEnum
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import java.math.BigDecimal
-
 
 @Table
 data class Book(
