@@ -5,10 +5,10 @@ import org.springframework.security.core.userdetails.UserDetails
 
 class UserSecurity
         (
-        val id: Long,
-        val login: String,
+       private val id: Long,
+       private val login: String,
         private val password: String,
-        val username:String,
+        private val username:String,
         private val uAuthorities: MutableCollection<GrantedAuthority>
     ) : UserDetails {
         override fun getAuthorities() = uAuthorities

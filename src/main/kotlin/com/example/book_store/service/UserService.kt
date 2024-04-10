@@ -17,21 +17,20 @@ class UserService (private val repository: UserRepository): IUserService {
     }
 
     override fun registration(request: SaveUserRequest) {
-        log.info("Create new band with name=${request.username}")
+        log.info("Create new user with name=${request.username}")
         repository.save(
             User(
                 username = request.username!!,
                 login = request.userLogin!!,
                 password = request.password!!,
                 userAge = request.userAge,
-                userRoleId = RoleEnum.USER!!,
-
+                userRoleId = RoleEnum.USER
             )
         )
     }
 
     override fun getInfo(id: Long): Optional<User> {
-        log.info("Find band with id=$id")
+        log.info("Find user with id=$id")
         return repository.findById(id)
     }
 
