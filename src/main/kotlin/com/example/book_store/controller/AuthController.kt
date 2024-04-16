@@ -1,130 +1,102 @@
-//package com.example.book_store.controller
-//
-//import com.example.book_store.dto.UserDto
-//import com.example.book_store.exceptions.UserNotFoundException
-//import com.example.book_store.map.Mapper
-//import com.example.book_store.models.User
-//import com.example.book_store.repo.UserRepository
-//import com.example.book_store.service.UserDetailsService
-//import org.springframework.http.MediaType
-//import org.springframework.http.ResponseEntity
-//import org.springframework.security.authentication.AuthenticationManager
-//import org.springframework.security.crypto.factory.PasswordEncoderFactories
-//import org.springframework.security.crypto.password.PasswordEncoder
-//import org.springframework.web.bind.annotation.*
-//import java.util.*
-//import java.util.function.Consumer
-//import java.util.function.Supplier
-//
-//
-//@RestController
-//@RequestMapping("/user", produces = [MediaType.APPLICATION_JSON_VALUE])
-//class UserController(
-//    private val userService:UserDetailsService,
-//    private val userRepository: UserRepository,
-//    private val authenticationManager: AuthenticationManager
-//        ) {
-//    val passwordEncoder: PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
-//
-//    @GetMapping("/users/{id}")
-//    @Throws(UserNotFoundException::class)
-//    fun getUserById(@PathVariable(value = "id") userId: Long): ResponseEntity<UserDto?>? {
-//        val user = Optional.ofNullable(userRepository.findById(userId)
-//            .orElseThrow<RuntimeException>(Supplier<RuntimeException> {
-//                UserNotFoundException(
-//                   "User with id=$userId not found"
-//                )
-//            })
-//        )
-//        val userDTO: UserDto = Mapper.mapUserToUserDTO(user.get())
-//        return ResponseEntity.ok().body<UserDto>(userDTO)
-//    }
-//
-//    @GetMapping("/users")
-//    fun getAllUsers(): MutableIterable<User> {
-//        return userRepository.findAll()
-//    }
-//    @PostMapping("/createUserDTO")
-//    fun registerUser(@RequestBody signupRequest: SignUpRequest): ResponseEntity<*>? {
-//        if (userRepository.existsByLogin(signupRequest.getLogin())) {
-//            return ResponseEntity
-//                .badRequest()
-//                .body<Any>(MessageResponse("Error: Username is exist"))
-//        }
-//
-//        val pupil: User = UserRepository.findUserByLogin(
-//            signupRequest.getName(),
-//            signupRequest.getLastname(),
-//            signupRequest.getPatronymic()
-//        )
-//
-//
-//        if (signupRequest.getRole().equals("pupil")) {
-//            if (pupil == null) {
-//                return ResponseEntity
-//                    .badRequest()
-//                    .body<Any>(MessageResponse("Error: Pupil is not exist"))
-//            }
-//        } else if (signupRequest.getRole().equals("teacher") || signupRequest.getRole().equals("Director")) {
-//            if (teacher == null) {
-//                return ResponseEntity
-//                    .badRequest()
-//                    .body<Any>(MessageResponse("Error: Teacher is not exist"))
-//            }
-//        }
-//
-//        val user: User = User(
-//            signupRequest.getLogin(),
-//            passwordEncoder.encode(signupRequest.getPassword()),
-//            EStatus.getId(signupRequest.getStatus())
-//        )
-//
-//        val reqRoles: Set<String> = signupRequest.getRole()
-//        val roles: MutableSet<Role> = HashSet<Role>()
-//
-//        if (reqRoles == null) {
-//            return ResponseEntity
-//                .badRequest()
-//                .body<Any>(MessageResponse("Error: Your role is null"))
-//            /*            Role userRole = roleRepository
-//                    .findByName(ERole.ROLE_USER)
-//                    .orElseThrow(() -> new RuntimeException("Error, Role USER is not found"));
-//              roles.add(userRole);*/
-//        } else {
-//            reqRoles.forEach(Consumer<String> { r: String? ->
-//                when (r) {
-//                    "pupil" -> {
-//                        val adminRole: Role = roleRepository
-//                            .findByName(ERole.ROLE_PUPIL)
-//                            .orElseThrow { java.lang.RuntimeException("Error, Role Pupil is not found") }
-//                        roles.add(adminRole)
-//                    }
-//
-//                    "teacher" -> {
-//                        val modRole: Role = roleRepository
-//                            .findByName(ERole.ROLE_TEACHER)
-//                            .orElseThrow { java.lang.RuntimeException("Error, Role Teacher is not found") }
-//                        roles.add(modRole)
-//                    }
-//                }
-//            })
-//        }
-//        user.setRoles(roles)
-//        userRepository.save(user)
-//        val userForId = userRepository.findByLogin(user.getLogin()).orElse(null)
-//
-//        val role: MutableSet<Role> = HashSet<Role>()
-//        role.add(Role(ERole.ROLE_PUPIL))
-//
-//        if (userForId.getRoles().equals(role)) {
-//            pupil.setUserId(userForId.getId())
-//            pupil.setEmail(signupRequest.getEmail())
-//            pupilRepository.save(pupil)
-//        } else {
-//            teacher.setUserId(userForId.getId())
-//            teacher.setEmail(signupRequest.getEmail())
-//            teacherRepository.save(teacher)
-//        }
-//        return ResponseEntity.ok<Any>(MessageResponse("User CREATED"))
-//    }
-//}
+package com.example.book_store.controller
+
+import com.example.book_store.jwt.JwtProvider
+import com.example.book_store.models.LoginUser
+import com.example.book_store.models.NewUser
+import com.example.book_store.models.User
+import com.example.book_store.models.enum.RoleEnum
+import com.example.book_store.repo.RoleRepository
+import com.example.book_store.repo.UserRepository
+import com.example.book_store.response.JwtResponse
+import com.example.book_store.response.ResponseMessage
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.web.bind.annotation.*
+import java.util.*
+
+
+@CrossOrigin(origins = ["*"], maxAge = 3600)
+@RestController
+@RequestMapping("/api/auth")
+class AuthController(
+    var authenticationManager: AuthenticationManager,
+
+    var userRepository: UserRepository,
+
+    var roleRepository: RoleRepository,
+
+    var encoder: PasswordEncoder,
+
+    var jwtProvider: JwtProvider
+) {
+
+
+    @PostMapping("/signin")
+    fun authenticateUser(@Valid @RequestBody loginRequest: LoginUser): ResponseEntity<*> {
+
+        val userCandidate: Optional<User?>? = userRepository.findByLogin(loginRequest.username!!)
+
+        if (userCandidate?.isPresent!!) {
+            val user: User = userCandidate.get()
+            val authentication = authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password)
+            )
+            SecurityContextHolder.getContext().setAuthentication(authentication)
+            val jwt: String = jwtProvider.generateJwtToken(user.login!!)
+            val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority(user.userRole.getName()))
+            return ResponseEntity.ok(JwtResponse(jwt, user.login, authorities))
+        } else {
+            return ResponseEntity(
+                ResponseMessage("User not found!"), HttpStatus.BAD_REQUEST
+            )
+        }
+    }
+
+    @PostMapping("/signup")
+    fun registerUser(@Valid @RequestBody newUser: NewUser): ResponseEntity<*> {
+
+        val userCandidate: Optional<User?>? = userRepository.findByLogin(newUser.login!!)
+
+        if (!userCandidate?.isPresent!!) {
+            if (usernameExists(newUser.login!!)) {
+                return ResponseEntity(
+                    ResponseMessage("Username is already taken!"), HttpStatus.BAD_REQUEST
+                )
+            }
+
+
+            // Creating user's account
+            val user = User(
+                userId = 0,
+                login = newUser.login!!,
+                userAge = newUser.userAge!!,
+                password = encoder.encode(newUser.password),
+                userRole = RoleEnum.USER
+
+            )
+            user!!.userRole =  roleRepository.findByName("USER_ROLE")
+
+            userRepository.save(user)
+
+            return ResponseEntity(ResponseMessage("User registered successfully!"), HttpStatus.OK)
+        } else {
+            return ResponseEntity(
+                ResponseMessage("User already exists!"), HttpStatus.BAD_REQUEST
+            )
+        }
+    }
+
+
+
+    private fun usernameExists(username: String): Boolean {
+        return userRepository.findByLogin(username)?.isPresent!!
+    }
+
+}

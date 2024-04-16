@@ -18,7 +18,7 @@ data class User(
     @Column(name = "user_age")
     val userAge:Int,
     @Column(name = "user_role_id")
-    val userRole:RoleEnum
+    var userRole:RoleEnum
 ) {
     constructor() : this(-1,"","",-1,RoleEnum.USER)
 
