@@ -1,37 +1,43 @@
 package com.example.book_store.service
 
+import com.example.book_store.dao.UserDao
+import com.example.book_store.dto.UserDto
 import com.example.book_store.models.User
-import com.example.book_store.models.enum.RoleEnum
 import com.example.book_store.repo.UserRepository
-import com.example.book_store.requestes.SaveUserRequest
 import com.example.book_store.service.impl.IUserService
-import org.hibernate.query.sqm.tree.SqmNode.log
+import org.springframework.http.ResponseEntity
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
-import java.util.*
+
 
 @Service
-class UserService (private val repository: UserRepository): IUserService {
+class UserService (
+    private val repository: UserRepository,
+    private val userDao:UserDao
+): IUserService {
 
-    override fun auth() {
-        TODO("Not yet implemented") // контроллер -> сервис -> dao -> repo
+
+    override fun getAllUsers(): List<User?>? {
+        return userDao.findAll()
     }
 
-    override fun registration(request: SaveUserRequest) {
-        log.info("Create new user with name=${request.username}")
-        repository.save(
-            User(
-                username = request.username!!,
-                login = request.userLogin!!,
-                password = request.password!!,
-                userAge = request.userAge,
-                userRoleId = RoleEnum.USER
-            )
-        )
+    override fun loadUserByUsername(login: String): UserDetails {
+
+        val user: User = repository
+            .findByLogin(login)
+            .orElseThrow { UsernameNotFoundException("User not found with  username: $login") }
+        return IUserService.build(user)
     }
 
-    override fun getInfo(id: Long): Optional<User> {
-        log.info("Find user with id=$id")
-        return repository.findById(id)
+
+
+    override fun getUserById(userId: Long?): ResponseEntity<UserDto?>? {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateUser(userId: Long?, userDetails: UserDto?): ResponseEntity<UserDto?>? {
+        TODO("Not yet implemented")
     }
 
 }
