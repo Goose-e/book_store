@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 class UserDao(private val userRepo:UserRepository
     ) {
 
-    fun findByLogin(login: String?): User? = userRepo.findByLoginWithinOpt(login)
+
     fun findAll() = userRepo.findAll()
 
 }

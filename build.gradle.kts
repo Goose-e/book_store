@@ -44,8 +44,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.2.4")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation ("org.springframework.boot:spring-boot-starter-security:3.2.4")
-    implementation ("io.ktor:ktor-server-auth:2.3.10")
-    implementation ("io.ktor:ktor-server-auth-jwt:2.3.10")
+    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+    implementation("io.jsonwebtoken:jjwt:0.12.5")
+
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 }
 
 tasks.withType<KotlinCompile> {
