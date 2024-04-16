@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity
 
 interface IUserService{
 
-    fun getAllUsers(): List<User?>?
+    fun getAllUsers(): MutableIterable<User>
 
     @Throws(UserNotFoundException::class)
     fun getUserById(userId: Long?): ResponseEntity<UserDto?>?

@@ -1,6 +1,6 @@
 package com.example.book_store.dao
 
-import com.example.book_store.repo.RoleRefRepository
+import com.example.book_store.repo.RoleRepository
 
-class RoleRefDao(private val roleRefRepo:RoleRefRepository){
+class RoleRefDao(private val roleRefRepo:RoleRepository){
 }

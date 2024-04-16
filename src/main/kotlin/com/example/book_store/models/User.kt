@@ -1,10 +1,7 @@
 package com.example.book_store.models
 
 import com.example.book_store.models.enum.RoleEnum
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 
 @Entity
@@ -12,6 +9,7 @@ import jakarta.persistence.Table
 data class User(
     @Id
     @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     val userId:Long? = null,
     @Column(name = "login")
     val login:String,

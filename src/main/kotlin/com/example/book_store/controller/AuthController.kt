@@ -5,9 +5,10 @@ import com.example.book_store.exceptions.UserNotFoundException
 import com.example.book_store.map.Mapper
 import com.example.book_store.models.User
 import com.example.book_store.repo.UserRepository
-import com.example.book_store.service.UserService
+import com.example.book_store.service.UserDetailsService
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
@@ -19,10 +20,12 @@ import java.util.function.Supplier
 @RestController
 @RequestMapping("/user", produces = [MediaType.APPLICATION_JSON_VALUE])
 class UserController(
-    private val userService:UserService,
-    private val userRepository: UserRepository
+    private val userService:UserDetailsService,
+    private val userRepository: UserRepository,
+    private val authenticationManager: AuthenticationManager
         ) {
     val passwordEncoder: PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
+
     @GetMapping("/users/{id}")
     @Throws(UserNotFoundException::class)
     fun getUserById(@PathVariable(value = "id") userId: Long): ResponseEntity<UserDto?>? {
