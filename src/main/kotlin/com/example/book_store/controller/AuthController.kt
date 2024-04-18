@@ -2,15 +2,16 @@ package com.example.book_store.controller
 
 import com.example.book_store.jwt.JwtProvider
 import com.example.book_store.models.LoginUser
-import com.example.book_store.models.NewUser
+import com.example.book_store.models.NewUserDto
 import com.example.book_store.models.User
-import com.example.book_store.models.enum.RoleEnum
+import com.example.book_store.models.enum.RoleEnum.USER
 import com.example.book_store.repo.RoleRepository
 import com.example.book_store.repo.UserRepository
 import com.example.book_store.response.JwtResponse
 import com.example.book_store.response.ResponseMessage
 import jakarta.validation.Valid
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -26,15 +27,11 @@ import java.util.*
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(
-    var authenticationManager: AuthenticationManager,
-
-    var userRepository: UserRepository,
-
-    var roleRepository: RoleRepository,
-
-    var encoder: PasswordEncoder,
-
-    var jwtProvider: JwtProvider
+    val authenticationManager: AuthenticationManager,
+    val userRepository: UserRepository,
+    val roleRepository: RoleRepository,
+    val encoder: PasswordEncoder,
+    val jwtProvider: JwtProvider
 ) {
 
 
@@ -48,47 +45,44 @@ class AuthController(
             val authentication = authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password)
             )
-            SecurityContextHolder.getContext().setAuthentication(authentication)
-            val jwt: String = jwtProvider.generateJwtToken(user.login!!)
+            SecurityContextHolder.getContext().authentication = authentication
+            val jwt: String = jwtProvider.generateJwtToken(user.login)
             val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority(user.userRole.getName()))
             return ResponseEntity.ok(JwtResponse(jwt, user.login, authorities))
         } else {
             return ResponseEntity(
-                ResponseMessage("User not found!"), HttpStatus.BAD_REQUEST
+                ResponseMessage("User not found!"), BAD_REQUEST
             )
         }
     }
 
     @PostMapping("/signup")
-    fun registerUser(@Valid @RequestBody newUser: NewUser): ResponseEntity<*> {
+    fun registerUser(@Valid @RequestBody newUserDto: NewUserDto): ResponseEntity<*> {
 
-        val userCandidate: Optional<User?>? = userRepository.findByLogin(newUser.login!!)
+        val userCandidate: Optional<User?>? = userRepository.findByLogin(newUserDto.login)
 
         if (!userCandidate?.isPresent!!) {
-            if (usernameExists(newUser.login!!)) {
+            if (usernameExists(newUserDto.login)) {
                 return ResponseEntity(
-                    ResponseMessage("Username is already taken!"), HttpStatus.BAD_REQUEST
+                    ResponseMessage("Username is already taken!"), BAD_REQUEST
                 )
             }
 
 
             // Creating user's account
             val user = User(
-                userId = 0,
-                login = newUser.login!!,
-                userAge = newUser.userAge!!,
-                password = encoder.encode(newUser.password),
-                userRole = RoleEnum.USER
-
+                login = newUserDto.login,
+                userAge = newUserDto.userAge,
+                password = encoder.encode(newUserDto.password),
+                userRole = USER
             )
-            user!!.userRole =  roleRepository.findByName("USER_ROLE")
 
             userRepository.save(user)
 
-            return ResponseEntity(ResponseMessage("User registered successfully!"), HttpStatus.OK)
+            return ResponseEntity(ResponseMessage("User registered successfully!"), OK)
         } else {
             return ResponseEntity(
-                ResponseMessage("User already exists!"), HttpStatus.BAD_REQUEST
+                ResponseMessage("User already exists!"), BAD_REQUEST
             )
         }
     }

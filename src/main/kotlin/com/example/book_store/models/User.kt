@@ -10,17 +10,17 @@ data class User(
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val userId:Long? = null,
+    val userId: Long? = null,
     @Column(name = "login")
-    val login:String,
+    val login: String,
     @Column(name = "password")
-    val password:String,
+    val password: String,
     @Column(name = "user_age")
-    val userAge:Int,
+    val userAge: Int,
     @Column(name = "user_role_id")
-    var userRole:RoleEnum
+    var userRole: RoleEnum
 ) {
-    constructor() : this(-1,"","",-1,RoleEnum.USER)
+    constructor() : this(-1, "", "", -1, RoleEnum.USER)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
