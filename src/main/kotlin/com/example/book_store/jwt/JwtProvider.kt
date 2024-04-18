@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.security.SignatureException
 import java.util.*
 
 @Component
-
-public class JwtProvider {
+class JwtProvider {
 
     private val logger: Logger = LoggerFactory.getLogger(JwtProvider::class.java)
 

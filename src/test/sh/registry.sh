@@ -5,7 +5,7 @@ USER_AGE=22
 PASSWORD="12io21i21o"
 
 URI="http://dev-goose"
-URI_ENDPOINT="/api/auth/v1/signUp"
+URI_ENDPOINT="/api/v1/auth/signup"
 PORT="8080"
 #=======================================================================================================================
 

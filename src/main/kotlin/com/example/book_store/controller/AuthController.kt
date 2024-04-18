@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*
 
 @CrossOrigin(origins = ["*"], maxAge = 3600)
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 class AuthController(
     val authenticationManager: AuthenticationManager,
     val userRepository: UserRepository,

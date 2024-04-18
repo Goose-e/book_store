@@ -3,6 +3,7 @@ package com.example.book_store.jwt
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
@@ -18,8 +19,8 @@ class JwtAuthEntryPoint : AuthenticationEntryPoint {
                           e: AuthenticationException
     ) {
 
-        logger.error("Unauthorized error. Message - {}", e!!.message)
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid credentials")
+        logger.error("Unauthorized error. Message - {}", e.message)
+        response.sendError(SC_UNAUTHORIZED, "Invalid credentials")
     }
 
     companion object {
