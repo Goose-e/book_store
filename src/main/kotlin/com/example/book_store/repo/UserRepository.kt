@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 
 
-interface UserRepository:CrudRepository<User,Long>{
-    @Query("SELECT * FROM ")
-    fun findByLogin(@Param("username") login: String?): User
+interface UserRepository : CrudRepository<User,Long> {
+    @Query("select u from User u where u.login = :USERNAME")
+    fun findByLogin(@Param("USERNAME") login: String?): User?
 }

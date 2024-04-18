@@ -1,11 +1,10 @@
 package com.example.book_store.controller
 
+import com.example.book_store.dto.LoginUserDto
+import com.example.book_store.dto.NewUserDto
 import com.example.book_store.jwt.JwtProvider
-import com.example.book_store.models.LoginUser
-import com.example.book_store.models.NewUserDto
 import com.example.book_store.models.User
 import com.example.book_store.models.enum.RoleEnum.USER
-import com.example.book_store.repo.RoleRepository
 import com.example.book_store.repo.UserRepository
 import com.example.book_store.response.JwtResponse
 import com.example.book_store.response.ResponseMessage
@@ -20,7 +19,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 
 @CrossOrigin(origins = ["*"], maxAge = 3600)
@@ -29,19 +27,17 @@ import java.util.*
 class AuthController(
     val authenticationManager: AuthenticationManager,
     val userRepository: UserRepository,
-    val roleRepository: RoleRepository,
     val encoder: PasswordEncoder,
     val jwtProvider: JwtProvider
 ) {
 
 
     @PostMapping("/signin")
-    fun authenticateUser(@Valid @RequestBody loginRequest: LoginUser): ResponseEntity<*> {
+    fun authenticateUser(@Valid @RequestBody loginRequest: LoginUserDto): ResponseEntity<*> {
 
-        val userCandidate: Optional<User?>? = userRepository.findByLogin(loginRequest.username!!)
+        val user: User? = userRepository.findByLogin(loginRequest.username)
 
-        if (userCandidate?.isPresent!!) {
-            val user: User = userCandidate.get()
+        user?.let {
             val authentication = authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(loginRequest.username, loginRequest.password)
             )
@@ -49,7 +45,7 @@ class AuthController(
             val jwt: String = jwtProvider.generateJwtToken(user.login)
             val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority(user.userRole.getName()))
             return ResponseEntity.ok(JwtResponse(jwt, user.login, authorities))
-        } else {
+        } ?: run {
             return ResponseEntity(
                 ResponseMessage("User not found!"), BAD_REQUEST
             )
@@ -59,38 +55,27 @@ class AuthController(
     @PostMapping("/signup")
     fun registerUser(@Valid @RequestBody newUserDto: NewUserDto): ResponseEntity<*> {
 
-        val userCandidate: Optional<User?>? = userRepository.findByLogin(newUserDto.login)
+        val userCandidate: User? = userRepository.findByLogin(newUserDto.login)
+        lateinit var responseEntity: ResponseEntity<ResponseMessage>
 
-        if (!userCandidate?.isPresent!!) {
-            if (usernameExists(newUserDto.login)) {
-                return ResponseEntity(
-                    ResponseMessage("Username is already taken!"), BAD_REQUEST
-                )
-            }
-
-
-            // Creating user's account
-            val user = User(
-                login = newUserDto.login,
-                userAge = newUserDto.userAge,
-                password = encoder.encode(newUserDto.password),
-                userRole = USER
-            )
-
-            userRepository.save(user)
-
-            return ResponseEntity(ResponseMessage("User registered successfully!"), OK)
-        } else {
-            return ResponseEntity(
+        userCandidate?.let {
+            responseEntity = ResponseEntity(
                 ResponseMessage("User already exists!"), BAD_REQUEST
             )
+        } ?: run {
+
+                // Creating user's account
+                val user = User(
+                    login = newUserDto.login,
+                    userAge = newUserDto.userAge,
+                    password = encoder.encode(newUserDto.password),
+                    userRole = USER
+                )
+
+                userRepository.save(user)
+
+                responseEntity = ResponseEntity(ResponseMessage("User registered successfully!"), OK)
         }
+        return responseEntity
     }
-
-
-
-    private fun usernameExists(username: String): Boolean {
-        return userRepository.findByLogin(username)?.isPresent!!
-    }
-
 }

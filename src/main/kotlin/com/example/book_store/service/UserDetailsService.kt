@@ -17,7 +17,7 @@ class UserDetailsService (
 
     @Throws(UserNotFoundException::class)
     override fun loadUserByUsername(username: String): UserDetails {
-        val user = repository.findByLogin(username)?.get()
+        val user = repository.findByLogin(username)
             ?: throw UserNotFoundException("User '$username' not found")
 
         val authorities: List<GrantedAuthority> =  listOf(SimpleGrantedAuthority(user.userRole.getName()))

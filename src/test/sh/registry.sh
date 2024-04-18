@@ -1,23 +1,23 @@
 #!/bin/bash
 
-START_DATE="8871289721894"
-FINISH_DATE="9189084390854"
-NOTE="It will be unavailable"
+LOGIN="userLogin"
+USER_AGE=22
+PASSWORD="12io21i21o"
 
-URI_ENDPOINT="/api/out-of-service/v1/createOrUpdate"
-PORT="1446"
+URI="http://dev-goose"
+URI_ENDPOINT="/api/auth/v1/signUp"
+PORT="8080"
 #=======================================================================================================================
 
 curl -X 'POST' \
   "$URI:$PORT$URI_ENDPOINT" \
-  -H "Authorization: Bearer $JWT" \
   -H 'Accept: application/json' \
   -H 'Content-Type: */*' \
   -d "{
         \"version\": \"string\",
         \"requestBodyDto\": {
-          \"serviceDateStart\": \"$START_DATE\",
-          \"serviceDateFinish\": \"$FINISH_DATE\",
-          \"note\": \"$NOTE\"
+          \"login\": \"$LOGIN\",
+          \"userAge\": \"$USER_AGE\",
+          \"password\": \"$PASSWORD\"
         }
       }" -vvv

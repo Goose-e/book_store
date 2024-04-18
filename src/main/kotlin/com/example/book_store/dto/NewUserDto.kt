@@ -1,4 +1,4 @@
-package com.example.book_store.models
+package com.example.book_store.dto
 
 import java.io.Serializable
 
