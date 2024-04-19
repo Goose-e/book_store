@@ -9,7 +9,7 @@ data class UserDto (
     val userAge:Int,
     val userRole: RoleEnum
 ){
-    constructor() : this("","",-1,RoleEnum.USER)
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
