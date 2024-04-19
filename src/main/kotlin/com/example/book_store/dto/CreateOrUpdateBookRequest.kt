@@ -11,6 +11,7 @@ data class CreateOrUpdateBookRequestDto(
 
 data class CreatedBookDto(
     // change
+    val code: String
 ) : ResponseDto
 
 data class CreateOrUpdateBookResponse(
