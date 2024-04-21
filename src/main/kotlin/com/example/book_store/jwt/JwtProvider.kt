@@ -4,19 +4,20 @@ import com.example.book_store.repo.UserRepository
 import io.jsonwebtoken.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.security.SignatureException
 import java.util.*
 
 @Component
-class JwtProvider {
+class JwtProvider(
+    var userRepository: UserRepository
+
+) {
 
     private val logger: Logger = LoggerFactory.getLogger(JwtProvider::class.java)
 
-    @Autowired
-    lateinit var userRepository: UserRepository
+
 
     @Value("\${assm.app.jwtSecret}")
     lateinit var jwtSecret: String

@@ -7,6 +7,8 @@ enum class StatusEnum(
     private val statusCode: String,
     private val statusName: String
 ) {
+    BOOK_ACTUAL(1, "Book Actual", "Book Actual"),
+    USER_ACTUAL(2, "User Actual", "User Actual"),
     ;
 
     companion object {

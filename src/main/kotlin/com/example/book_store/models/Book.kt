@@ -8,13 +8,13 @@ import jakarta.persistence.Table
 import java.math.BigDecimal
 
 @Entity
-@Table(name = "book")
+@Table(name = "books")
 data class Book(
     @Id
     @Column(name = "book_id")
-    val bookId:Long,
+    val bookId:Long?= null,
     @Column(name = "genre_id")
-    val genreId:GenreEnum,
+    val genre:GenreEnum,
     @Column(name = "book_publisher")
     val bookPublisher:String,
     @Column(name = "book_price")
@@ -28,5 +28,5 @@ data class Book(
     @Column(name = "book_name")
     val bookName:String,
     @Column(name = "book_code")
-    val bookCode:String
+    var bookCode:String
 )

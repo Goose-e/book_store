@@ -11,6 +11,7 @@ import jakarta.persistence.Table
 data class GenreRef(
     @Id
     @Column(name = "genre_id")
+
     val genreId:GenreEnum,
     @Column(name = "genre_code")
     val genreCode:String,

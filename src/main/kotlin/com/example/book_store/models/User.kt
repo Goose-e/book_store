@@ -9,7 +9,7 @@ import jakarta.persistence.*
 data class User(
     @Id
     @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
     val userId: Long? = null,
     @Column(name = "login")
     val login: String,
@@ -18,7 +18,10 @@ data class User(
     @Column(name = "user_age")
     val userAge: Int,
     @Column(name = "user_role_id")
-    var userRole: RoleEnum
+    var userRole: RoleEnum,
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "user_id", referencedColumnName = "core_entity_id")
+    val coreEntity: CoreEntity? = null
 ) {
     constructor() : this(-1, "", "", -1, RoleEnum.USER)
 

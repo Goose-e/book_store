@@ -11,6 +11,7 @@ import jakarta.persistence.Table
 data class RoleRef(
     @Id
     @Column(name = "role_id")
+
     val roleId:RoleEnum,
     @Column(name = "role_code")
     val roleCode:String,

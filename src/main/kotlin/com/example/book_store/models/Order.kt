@@ -12,6 +12,7 @@ import java.time.LocalDateTime
 data class Order(
     @Id
     @Column(name = "order_id")
+
     val orderId: Long,
     @Column(name = "user_id")
     val userId: Long,

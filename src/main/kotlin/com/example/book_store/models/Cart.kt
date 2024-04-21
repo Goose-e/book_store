@@ -10,6 +10,7 @@ import jakarta.persistence.Table
 data class Cart(
     @Id
     @Column(name = "cart_id")
+
     val cartId:Long,
     @Column(name = "user_id")
     val userId:Long,

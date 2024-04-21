@@ -2,16 +2,44 @@ package com.example.book_store.dto
 
 import com.example.book_store.constant.RequestId
 import com.example.book_store.constant.SysConst.EMPTY_STRING
+import com.example.book_store.models.enum.GenreEnum
 import java.io.Serializable
+import java.math.BigDecimal
 
 data class CreateOrUpdateBookRequestDto(
-    // change
-    val code: String?
+    val genre: GenreEnum,
+
+    val bookPublisher:String,
+
+    val bookPrice: BigDecimal,
+
+    val bookDescription:String,
+
+    val bookPages:Int,
+
+    val bookQuantity: Int,
+
+    val bookName:String,
+
+    val bookCode:String?
 ) : Serializable
 
 data class CreatedBookDto(
-    // change
-    val code: String
+    val genre:GenreEnum ,
+
+    val bookPublisher:String,
+
+    val bookPrice: BigDecimal,
+
+    val bookDescription:String,
+
+    val bookPages:Int,
+
+    val bookQuantity: Int,
+
+    val bookName:String,
+
+    val bookCode:String
 ) : ResponseDto
 
 data class CreateOrUpdateBookResponse(

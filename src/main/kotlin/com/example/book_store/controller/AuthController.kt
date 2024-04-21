@@ -1,16 +1,24 @@
 package com.example.book_store.controller
 
-import com.example.book_store.dto.LoginUserDto
-import com.example.book_store.dto.NewUserDto
+import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
+import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
+import com.example.book_store.dao.CoreEntityDao
+import com.example.book_store.dao.UserDao
+import com.example.book_store.dto.*
 import com.example.book_store.jwt.JwtProvider
+import com.example.book_store.map.Mapper
+import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.User
 import com.example.book_store.models.enum.RoleEnum.USER
+import com.example.book_store.models.enum.StatusEnum
+import com.example.book_store.repo.StatusRefRepository
 import com.example.book_store.repo.UserRepository
 import com.example.book_store.response.JwtResponse
 import com.example.book_store.response.ResponseMessage
+import com.example.book_store.service.GenerationService.Companion.generateEntityId
 import jakarta.validation.Valid
+import org.dbs.validator.ErrorInfo
 import org.springframework.http.HttpStatus.BAD_REQUEST
-import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -19,6 +27,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime.now
 
 
 @CrossOrigin(origins = ["*"], maxAge = 3600)
@@ -28,7 +37,10 @@ class AuthController(
     val authenticationManager: AuthenticationManager,
     val userRepository: UserRepository,
     val encoder: PasswordEncoder,
-    val jwtProvider: JwtProvider
+    val jwtProvider: JwtProvider,
+    val coreEntityDao: CoreEntityDao,
+    val userDao: UserDao,
+    val statusRefRepository: StatusRefRepository
 ) {
 
 
@@ -43,7 +55,7 @@ class AuthController(
             )
             SecurityContextHolder.getContext().authentication = authentication
             val jwt: String = jwtProvider.generateJwtToken(user.login)
-            val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority(user.userRole.getName()))
+            val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority(user.userRole.name))
             return ResponseEntity.ok(JwtResponse(jwt, user.login, authorities))
         } ?: run {
             return ResponseEntity(
@@ -53,29 +65,37 @@ class AuthController(
     }
 
     @PostMapping("/signup")
-    fun registerUser(@Valid @RequestBody newUserDto: NewUserDto): ResponseEntity<*> {
-
+    fun registerUser(@Valid @RequestBody newUserDto: NewUserRequestDto): HttpResponseBody<NewUserDto> {
+        val response: HttpResponseBody<NewUserDto> = CreateUserResponse()
         val userCandidate: User? = userRepository.findByLogin(newUserDto.login)
-        lateinit var responseEntity: ResponseEntity<ResponseMessage>
 
         userCandidate?.let {
-            responseEntity = ResponseEntity(
-                ResponseMessage("User already exists!"), BAD_REQUEST
-            )
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "User already exist"))
         } ?: run {
+            coreEntityDao.findEntityById(userCandidate?.userId)?.let {
+                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Entity already exist"))
+            } ?: run {
+                val coreEntity = CoreEntity(
+                    coreEntityId = generateEntityId(),
+                    createDate = now(),
+                    deleteDate = LOCALDATETIME_NULL,
+                    status = StatusEnum.USER_ACTUAL
+                )
 
-                // Creating user's account
                 val user = User(
+                    userId = coreEntity.coreEntityId,
                     login = newUserDto.login,
                     userAge = newUserDto.userAge,
                     password = encoder.encode(newUserDto.password),
-                    userRole = USER
+                    userRole = USER,
+                    coreEntity = coreEntity
                 )
 
-                userRepository.save(user)
+                userDao.save(user)
+                response.responseEntity = Mapper.mapUserToUserDTO(user)
+            }
 
-                responseEntity = ResponseEntity(ResponseMessage("User registered successfully!"), OK)
         }
-        return responseEntity
+        return response
     }
 }

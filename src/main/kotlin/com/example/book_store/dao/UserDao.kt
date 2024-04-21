@@ -10,5 +10,5 @@ class UserDao(private val userRepo:UserRepository
 
 
     fun findAll() = userRepo.findAll()
-
+    fun save(user:User) {userRepo.save(user)}
 }

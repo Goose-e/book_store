@@ -15,9 +15,8 @@ class CreateBookController(
     private val bookService: BookService
 ) {
     @PostMapping("/createOrUpdate")
-    fun createOrUpdateBook(@Valid @RequestBody bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> = run {
+    fun createOrUpdateBook(@Valid @RequestBody bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> = run{
         bookService.addBook(bookRequestDto)
-        lateinit var response: HttpResponseBody<CreatedBookDto>
-        response
+
     }
 }

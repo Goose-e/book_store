@@ -56,6 +56,7 @@ object SysConst {
     const val INT_10POW9 = 1000000000
     const val INTEGER_ZERO = 0
     const val INTEGER_ONE = 1
+    val BIGDECIMAL_ZERO = BigDecimal.ZERO
     const val DOUBLE_ZERO: Double = 0.0
     val INTEGER_NULL: Int? = null
     val LOCALDATE_NULL: LocalDate? = null
@@ -69,6 +70,8 @@ object SysConst {
     const val STRING_TRUE = "true"
     const val STRING_FALSE = "false"
     val BYTES_NULL: ByteArray? = null
+
+
 
     const val OC_OK = "OC_OK"
     const val INVALID_ENTITY_ATTR = "INVALID ENTITY ATTR"

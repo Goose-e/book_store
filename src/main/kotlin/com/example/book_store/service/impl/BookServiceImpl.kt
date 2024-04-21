@@ -1,18 +1,37 @@
 package com.example.book_store.service.impl
 
+import com.example.book_store.constant.SysConst.BIGDECIMAL_ZERO
+import com.example.book_store.constant.SysConst.EMPTY_STRING
+import com.example.book_store.constant.SysConst.INTEGER_ZERO
+import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
+import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
 import com.example.book_store.dao.BookDao
-import com.example.book_store.dto.BookDTO
+import com.example.book_store.dao.CoreEntityDao
 import com.example.book_store.dto.CreateOrUpdateBookRequestDto
+import com.example.book_store.dto.CreateOrUpdateBookResponse
 import com.example.book_store.dto.CreatedBookDto
+import com.example.book_store.dto.HttpResponseBody
+import com.example.book_store.map.BookMapper
+import com.example.book_store.models.Book
+import com.example.book_store.models.CoreEntity
+import com.example.book_store.models.enum.GenreEnum.NO_GENRE
+import com.example.book_store.models.enum.StatusEnum
 import com.example.book_store.service.BookService
+import com.example.book_store.service.GenerationService
+import com.example.book_store.service.GenerationService.Companion.generateEntityId
+import org.dbs.validator.ErrorInfo
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime.now
 
 @Service
 class BookServiceImpl(
-    val bookDao: BookDao
+    val bookDao: BookDao,
+    val coreEntityDao: CoreEntityDao
 ) : BookService {
 
-    override fun addBook(bookRequestDto: CreateOrUpdateBookRequestDto): CreatedBookDto {
+    override fun addBook(bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> {
+        val response: HttpResponseBody<CreatedBookDto> = CreateOrUpdateBookResponse()
+        lateinit var modifiedBook: Book
         // add logic
         /*
         * 1. валидирование полей
@@ -32,14 +51,53 @@ class BookServiceImpl(
         *
         * Пока на уникальность в остальном не проверяем, потом надо будет
         * */
+        bookRequestDto.bookCode?.let { code ->
+            bookDao.findByCode(code)?.let {
+                BookMapper.toBook(it, bookRequestDto, code)
+                bookDao.save(modifiedBook)
+            } ?: run {
+                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
+            }
+        } ?: run {
+            val book = Book(
+                bookId = generateEntityId(),
+                bookName = EMPTY_STRING,
+                bookPublisher = EMPTY_STRING,
+                bookDescription = EMPTY_STRING,
+                bookQuantity = INTEGER_ZERO,
+                bookPrice = BIGDECIMAL_ZERO,
+                bookPages = INTEGER_ZERO,
+                genre = NO_GENRE,
+                bookCode = EMPTY_STRING
+            )
+            modifiedBook = BookMapper.toBook(book, bookRequestDto, GenerationService.generateCode())
+             coreEntityDao.findEntityById(book.bookId)?.let {
+                 response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Entity already exist"))
+             } ?:run{
+
+             CoreEntity(
+                 coreEntityId = book.bookId,
+                 createDate = now(),
+                 deleteDate = LOCALDATETIME_NULL,
+                 status  = StatusEnum.BOOK_ACTUAL
+             )
+             }
+
+//            inTransaction {
+//                bookDao.save(modifiedBook)
+//                coreEntity.save()
+//            }
+        }
+
+        response.responseEntity = BookMapper.mapBookToBookDTO(modifiedBook)
+        return response
+    }
+
+    override fun deleteBook(bookCode: CreatedBookDto): CreatedBookDto {
         TODO("Not yet implemented")
     }
 
-    override fun deleteBook(bookCode: BookDTO): BookDTO {
-        TODO("Not yet implemented")
-    }
-
-    override fun getBook(bookName: BookDTO): BookDTO {
+    override fun getBook(bookName: CreatedBookDto): CreatedBookDto {
         /*
         * По аналогии с созданием (пишешь контроллер, дтошки)
         * Поиск по названию, код и получение описания книги
@@ -47,12 +105,11 @@ class BookServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getAllBooks(): List<BookDTO> {
+    override fun getAllBooks(): List<CreatedBookDto> {
         TODO("Not yet implemented")
     }
 
-    override fun updateBook(bookDTO: BookDTO): BookDTO {
+    override fun updateBook(bookDTO: CreatedBookDto): CreatedBookDto {
         TODO("Not yet implemented")
     }
-
 }
