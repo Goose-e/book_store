@@ -2,6 +2,8 @@ package com.example.book_store.controller
 
 import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
 import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
+import com.example.book_store.constant.SysConst.OC_BUGS
+import com.example.book_store.constant.SysConst.OC_OK
 import com.example.book_store.dao.CoreEntityDao
 import com.example.book_store.dao.UserDao
 import com.example.book_store.dto.*
@@ -10,7 +12,7 @@ import com.example.book_store.map.Mapper
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.User
 import com.example.book_store.models.enum.RoleEnum.USER
-import com.example.book_store.models.enum.StatusEnum
+import com.example.book_store.models.enum.StatusEnum.USER_ACTUAL
 import com.example.book_store.repo.StatusRefRepository
 import com.example.book_store.repo.UserRepository
 import com.example.book_store.response.JwtResponse
@@ -26,6 +28,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime.now
 
@@ -70,32 +73,37 @@ class AuthController(
         val userCandidate: User? = userRepository.findByLogin(newUserDto.login)
 
         userCandidate?.let {
+            response.message = "User already exist"
             response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "User already exist"))
         } ?: run {
-            coreEntityDao.findEntityById(userCandidate?.userId)?.let {
-                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Entity already exist"))
-            } ?: run {
-                val coreEntity = CoreEntity(
-                    coreEntityId = generateEntityId(),
-                    createDate = now(),
-                    deleteDate = LOCALDATETIME_NULL,
-                    status = StatusEnum.USER_ACTUAL
-                )
 
-                val user = User(
-                    userId = coreEntity.coreEntityId,
-                    login = newUserDto.login,
-                    userAge = newUserDto.userAge,
-                    password = encoder.encode(newUserDto.password),
-                    userRole = USER,
-                    coreEntity = coreEntity
-                )
+            val coreEntity = CoreEntity(
+                coreEntityId = generateEntityId(),
+                createDate = now(),
+                deleteDate = LOCALDATETIME_NULL,
+                status = USER_ACTUAL
+            )
 
-                userDao.save(user)
-                response.responseEntity = Mapper.mapUserToUserDTO(user)
-            }
+            val user = User(
+                userId = coreEntity.coreEntityId,
+                login = newUserDto.login,
+                userAge = newUserDto.userAge,
+                password = encoder.encode(newUserDto.password),
+                userRole = USER,
+                coreEntity = coreEntity
+            )
+
+            savegg(coreEntity, user)
+            response.responseEntity = Mapper.mapUserToUserDTO(user)
 
         }
+        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
         return response
+    }
+
+    @Transactional
+    fun savegg(coreEntity: CoreEntity, user: User) {
+        coreEntityDao.save(coreEntity)
+        userDao.save(user)
     }
 }

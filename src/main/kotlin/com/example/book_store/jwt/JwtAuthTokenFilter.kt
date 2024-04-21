@@ -33,13 +33,15 @@ class JwtAuthTokenFilter (
                 val authentication = UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.authorities
                 )
+
                 authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
                 SecurityContextHolder.getContext().authentication = authentication
+
             }
         } catch (ex: IllegalArgumentException) {
-          //  logger.error("Invalid JWT token: {}", ex.message)
+            logger.error("Invalid JWT token: {}", ex)
         } catch (ex: JwtException) {
-          //  logger.error("JWT token validation failed: {}", ex.message)
+            logger.error("JWT token validation failed: {}", ex)
         }
 
         filterChain.doFilter(request, response)

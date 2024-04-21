@@ -1,8 +1,9 @@
-package com.example.book_store.security
+package com.example.book_store.config.security
 
 import org.springframework.core.convert.converter.Converter
-import java.util.*
 import org.springframework.security.oauth2.jwt.Jwt
+import java.util.*
+
 class AccessTokenAuthenticationOAuth2Converter: Converter<Jwt, AccessTokenAuthentication> {
     override fun convert(source: Jwt): AccessTokenAuthentication {
         val userId = source.getClaim<Long>("userId")

@@ -1,4 +1,4 @@
-package com.example.book_store.security
+package com.example.book_store.config.security
 
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.GrantedAuthority

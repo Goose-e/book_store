@@ -3,16 +3,17 @@ package com.example.book_store.models.enum
 import com.example.book_store.exceptions.UnknownEnumException
 
 enum class StatusEnum(
-    private val statusId: Long,
+    private val statusId: Int,
     private val statusCode: String,
     private val statusName: String
 ) {
-    BOOK_ACTUAL(1, "Book Actual", "Book Actual"),
-    USER_ACTUAL(2, "User Actual", "User Actual"),
+    // TODO: delete auto set id in db
+    BOOK_ACTUAL(0, "BOOK_CODE", "Book Actual"),
+    USER_ACTUAL(1, "USER_ACTUAL", "User Actual"),
     ;
 
     companion object {
-        fun getEnum(statusId: Long): StatusEnum =
+        fun getEnum(statusId: Int): StatusEnum =
             entries.find { it.getId() == statusId } ?: throw UnknownEnumException("privilegeId = $statusId")
     }
 

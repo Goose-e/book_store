@@ -17,6 +17,11 @@ class CreateBookController(
     @PostMapping("/createOrUpdate")
     fun createOrUpdateBook(@Valid @RequestBody bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> = run{
         bookService.addBook(bookRequestDto)
+    }
 
+    @GetMapping("/getByBookName/{bookName}")
+    fun getBookByBookName(@PathVariable(value = "bookName") bookName: String):HttpResponseBody<CreatedBookDto>  {
+       val bookFinded = bookService.getBook(bookName = bookName)
+        return bookFinded
     }
 }

@@ -12,11 +12,11 @@ import java.time.LocalDateTime
 data class CoreEntity(
     @Id
     @Column(name = "core_entity_id")
-    val coreEntityId:Long?,
+    val coreEntityId: Long?,
     @Column(name = "status_id")
-    val status:StatusEnum,
+    val status: StatusEnum,
     @Column(name = "create_date")
-    val createDate:LocalDateTime,
+    val createDate: LocalDateTime,
     @Column(name = "delete_date")
-    val deleteDate:LocalDateTime?
+    val deleteDate: LocalDateTime?
 )

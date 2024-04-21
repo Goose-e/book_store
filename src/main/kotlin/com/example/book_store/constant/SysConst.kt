@@ -74,6 +74,7 @@ object SysConst {
 
 
     const val OC_OK = "OC_OK"
+    const val OC_BUGS = "OC_BUGS"
     const val INVALID_ENTITY_ATTR = "INVALID ENTITY ATTR"
 
     //==========================================================================

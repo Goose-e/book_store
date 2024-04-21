@@ -4,18 +4,18 @@ import com.example.book_store.exceptions.UnknownEnumException
 
 
 enum class RoleEnum(
-    private val roleId: Long,
+    private val roleId: Int,
 
     private val roleCode: String,
 
     private val roleName: String
 ) {
-    USER(0,"u","USER"),
-    ADMIN(1,"a","ADMIN")
+    USER(0,"USER","USER"),
+    ADMIN(1,"ADMIN","ADMIN")
     ;
 
     companion object {
-        fun getEnum(roleId: Long): RoleEnum =
+        fun getEnum(roleId: Int): RoleEnum =
             entries.find { it.getId() == roleId } ?: throw UnknownEnumException("privilegeId = $roleId")
     }
 

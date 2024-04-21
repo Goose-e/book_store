@@ -11,10 +11,9 @@ import jakarta.persistence.Table
 data class RoleRef(
     @Id
     @Column(name = "role_id")
-
-    val roleId:RoleEnum,
+    val roleId: RoleEnum,
     @Column(name = "role_code")
-    val roleCode:String,
+    val roleCode: String,
     @Column(name = "role_name")
-    val roleName:String
+    val roleName: String
 )

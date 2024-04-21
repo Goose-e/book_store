@@ -3,15 +3,15 @@ package com.example.book_store.models.enum
 import com.example.book_store.exceptions.UnknownEnumException
 
 enum class GenreEnum(
-    private val genreId: Long,
+    private val genreId: Int,
     private val genreCode: String,
     private val genreName: String
 ) {
-    NO_GENRE(1, "NO_GENRE", "No genre")
+    NO_GENRE(0, "NO_GENRE", "No genre")
     ;
 
     companion object {
-        fun getEnum(genreId: Long): GenreEnum =
+        fun getEnum(genreId: Int): GenreEnum =
             entries.find { it.getId() == genreId } ?: throw UnknownEnumException("privilegeId = $genreId")
     }
 

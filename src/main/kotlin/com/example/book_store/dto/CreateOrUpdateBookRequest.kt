@@ -45,3 +45,4 @@ data class CreatedBookDto(
 data class CreateOrUpdateBookResponse(
     private val httpRequestId: RequestId = EMPTY_STRING
 ) : HttpResponseBody<CreatedBookDto>(httpRequestId)
+data class BookFindDTO(private val httpRequestId: RequestId = EMPTY_STRING):HttpResponseBody<CreatedBookDto>(httpRequestId)

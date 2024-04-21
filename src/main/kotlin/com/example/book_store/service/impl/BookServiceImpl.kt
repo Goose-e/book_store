@@ -7,10 +7,7 @@ import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
 import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
 import com.example.book_store.dao.BookDao
 import com.example.book_store.dao.CoreEntityDao
-import com.example.book_store.dto.CreateOrUpdateBookRequestDto
-import com.example.book_store.dto.CreateOrUpdateBookResponse
-import com.example.book_store.dto.CreatedBookDto
-import com.example.book_store.dto.HttpResponseBody
+import com.example.book_store.dto.*
 import com.example.book_store.map.BookMapper
 import com.example.book_store.models.Book
 import com.example.book_store.models.CoreEntity
@@ -97,13 +94,17 @@ class BookServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getBook(bookName: CreatedBookDto): CreatedBookDto {
-        /*
-        * По аналогии с созданием (пишешь контроллер, дтошки)
-        * Поиск по названию, код и получение описания книги
-        * */
-        TODO("Not yet implemented")
+    override fun getBook(bookName: String):HttpResponseBody<CreatedBookDto> {
+        val response: HttpResponseBody<CreatedBookDto> = BookFindDTO()
+        val bookDTOList: List<CreatedBookDto?> = bookDao.findByName(bookName)
+        if (bookDTOList.isEmpty()){
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
+        }else{
+            response.responseEntity = bookDTOList[0]
+        }
+        return response
     }
+
 
     override fun getAllBooks(): List<CreatedBookDto> {
         TODO("Not yet implemented")

@@ -1,4 +1,4 @@
-package com.example.book_store.security
+package com.example.book_store.config.security
 
 import com.example.book_store.jwt.JwtAuthEntryPoint
 import com.example.book_store.jwt.JwtAuthTokenFilter
