@@ -28,5 +28,5 @@ data class Book(
     @Column(name = "book_name")
     val bookName:String,
     @Column(name = "book_code")
-    var bookCode:String
+    val bookCode:String
 )

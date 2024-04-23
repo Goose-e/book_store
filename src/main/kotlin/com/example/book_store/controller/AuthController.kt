@@ -93,7 +93,7 @@ class AuthController(
                 coreEntity = coreEntity
             )
 
-            savegg(coreEntity, user)
+            saveInDB(coreEntity, user)
             response.responseEntity = Mapper.mapUserToUserDTO(user)
 
         }
@@ -102,7 +102,7 @@ class AuthController(
     }
 
     @Transactional
-    fun savegg(coreEntity: CoreEntity, user: User) {
+    fun saveInDB(coreEntity: CoreEntity, user: User) {
         coreEntityDao.save(coreEntity)
         userDao.save(user)
     }

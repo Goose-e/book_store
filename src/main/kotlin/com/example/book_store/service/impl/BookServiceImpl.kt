@@ -57,12 +57,14 @@ class BookServiceImpl(
                 response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
             }
         } ?: run {
+
             val coreEntity = CoreEntity(
-                coreEntityId = generateEntityId(),
+                coreEntityId =generateEntityId() ,
                 createDate = now(),
                 deleteDate = LOCALDATETIME_NULL,
                 status = StatusEnum.BOOK_ACTUAL
             )
+
             val book = Book(
                 bookId = coreEntity.coreEntityId,
                 bookName = EMPTY_STRING,
@@ -74,10 +76,10 @@ class BookServiceImpl(
                 genre = NO_GENRE,
                 bookCode = EMPTY_STRING
             )
+
             modifiedBook = BookMapper.toBook(book, bookRequestDto, GenerationService.generateCode())
             saveInDB(coreEntity, modifiedBook)
         }
-
         response.responseEntity = BookMapper.mapBookToBookDTO(modifiedBook)
         return response
     }
