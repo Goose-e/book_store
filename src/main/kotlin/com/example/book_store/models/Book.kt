@@ -12,21 +12,22 @@ import java.math.BigDecimal
 data class Book(
     @Id
     @Column(name = "book_id")
-    val bookId:Long?= null,
+    val bookId: Long? = null,
     @Column(name = "genre_id")
-    val genre:GenreEnum,
+    val genre: GenreEnum,
     @Column(name = "book_publisher")
-    val bookPublisher:String,
+    val bookPublisher: String,
     @Column(name = "book_price")
-    val bookPrice:BigDecimal,
+    val bookPrice: BigDecimal,
     @Column(name = "book_description")
-    val bookDescription:String,
+    val bookDescription: String,
     @Column(name = "book_pages")
-    val bookPages:Int,
+    val bookPages: Int,
     @Column(name = "book_quantity")
     val bookQuantity: Int,
     @Column(name = "book_name")
-    val bookName:String,
+    val bookName: String,
     @Column(name = "book_code")
-    val bookCode:String
+    val bookCode: String,
+
 )

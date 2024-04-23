@@ -1,7 +1,10 @@
 package com.example.book_store.models
 
 import com.example.book_store.models.enum.RoleEnum
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 
 @Entity
@@ -19,9 +22,6 @@ data class User(
     val userAge: Int,
     @Column(name = "user_role_id")
     var userRole: RoleEnum,
-    @OneToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "user_id", referencedColumnName = "core_entity_id")
-    val coreEntity: CoreEntity? = null
 ) {
     constructor() : this(-1, "", "", -1, RoleEnum.USER)
 

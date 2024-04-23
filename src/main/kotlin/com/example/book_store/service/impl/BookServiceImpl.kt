@@ -30,25 +30,6 @@ class BookServiceImpl(
     override fun addBook(bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> {
         val response: HttpResponseBody<CreatedBookDto> = CreateOrUpdateBookResponse()
         lateinit var modifiedBook: Book
-        // add logic
-        /*
-        * 1. валидирование полей
-        * 2. создание объекта книга (в маппере)
-        * 3. создание сущности core_entity
-        * 4. сохранение в базу двух таблиц в транзакции
-        * 5. создание объекта CreatedBookDto - вернуть в конце функции
-        *
-        * Важно: отсюда обращаешься к уровню ДАО, если нужно что-то сохранить или взять из бд
-        * Из дао обращаешься в базу данных
-        *
-        * Подсказка:
-        * Т.к. это и создание, и апдейт, то код будет передаваться
-        * То есть, ты ищешь в базе по коду, если он не налл
-        * И обновляешь эту сущность
-        * Если код налл, то создаешь новую
-        *
-        * Пока на уникальность в остальном не проверяем, потом надо будет
-        * */
         bookRequestDto.bookCode?.let { code ->
             bookDao.findByCode(code)?.let {
                 BookMapper.toBook(it, bookRequestDto, code)
@@ -74,7 +55,7 @@ class BookServiceImpl(
                 bookPrice = BIGDECIMAL_ZERO,
                 bookPages = INTEGER_ZERO,
                 genre = NO_GENRE,
-                bookCode = EMPTY_STRING
+                bookCode = EMPTY_STRING ,
             )
 
             modifiedBook = BookMapper.toBook(book, bookRequestDto, GenerationService.generateCode())
@@ -87,8 +68,9 @@ class BookServiceImpl(
 
     @Transactional
     fun saveInDB(coreEntity: CoreEntity, book: Book) {
-        bookDao.save(book)
+
         coreEntityDao.save(coreEntity)
+        bookDao.save(book)
     }
 
     override fun bookOutOfStock(bookCode: CreatedBookDto): CreatedBookDto {

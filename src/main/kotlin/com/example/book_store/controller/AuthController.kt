@@ -89,8 +89,8 @@ class AuthController(
                 login = newUserDto.login,
                 userAge = newUserDto.userAge,
                 password = encoder.encode(newUserDto.password),
-                userRole = USER,
-                coreEntity = coreEntity
+                userRole = USER
+
             )
 
             saveInDB(coreEntity, user)
