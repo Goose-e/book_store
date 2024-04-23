@@ -7,7 +7,8 @@ enum class GenreEnum(
     private val genreCode: String,
     private val genreName: String
 ) {
-    NO_GENRE(0, "NO_GENRE", "No genre")
+    NO_GENRE(0, "NO_GENRE", "No genre"),
+    FANTASY(1, "FANTASY", "Fantasy")
     ;
 
     companion object {

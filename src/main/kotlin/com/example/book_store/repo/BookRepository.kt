@@ -11,5 +11,8 @@ interface BookRepository : CrudRepository<Book, Int> {
     fun findByCode(@Param("code") bookCode: String?): Book?
 
     @Query("select b from Book b where b.bookName = :book")
-    fun findByBook(@Param("book") book: String): List<CreatedBookDto?>
+    fun findByBookName(@Param("book") book: String): List<CreatedBookDto?>
+
+    @Query("select b from Book b group by b.bookName")
+    fun findAllBooks(): List<CreatedBookDto?>
 }

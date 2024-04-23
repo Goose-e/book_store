@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component
 class BookDao(private val bookRepo: BookRepository) {
 
     fun findByCode(bookCode: String?): Book? = bookRepo.findByCode(bookCode)
-
+    fun findAllBooks(): List<CreatedBookDto?> = bookRepo.findAllBooks()
     fun save(book: Book): Book = bookRepo.save(book)
-    fun findByName(book: String): List<CreatedBookDto?> = bookRepo.findByBook(book)
+
+    fun findByName(book: String): List<CreatedBookDto?> = bookRepo.findByBookName(book)
 }

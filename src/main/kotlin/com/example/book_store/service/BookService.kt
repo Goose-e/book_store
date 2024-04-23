@@ -6,8 +6,7 @@ import com.example.book_store.dto.HttpResponseBody
 
 interface BookService {
     fun addBook(bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto>
-    fun deleteBook(bookCode: CreatedBookDto): CreatedBookDto
+    fun bookOutOfStock(bookCode: CreatedBookDto): CreatedBookDto
     fun getBook(bookName: String): HttpResponseBody<CreatedBookDto>
-    fun getAllBooks(): List<CreatedBookDto>
-    fun updateBook(bookDTO: CreatedBookDto): CreatedBookDto
+    fun getAllBooks(): HttpResponseBody<CreatedBookDto>
 }

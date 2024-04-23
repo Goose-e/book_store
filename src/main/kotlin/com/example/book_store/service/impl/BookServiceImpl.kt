@@ -18,6 +18,7 @@ import com.example.book_store.service.GenerationService
 import com.example.book_store.service.GenerationService.Companion.generateEntityId
 import org.dbs.validator.ErrorInfo
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime.now
 
 @Service
@@ -56,8 +57,14 @@ class BookServiceImpl(
                 response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
             }
         } ?: run {
+            val coreEntity = CoreEntity(
+                coreEntityId = generateEntityId(),
+                createDate = now(),
+                deleteDate = LOCALDATETIME_NULL,
+                status = StatusEnum.BOOK_ACTUAL
+            )
             val book = Book(
-                bookId = generateEntityId(),
+                bookId = coreEntity.coreEntityId,
                 bookName = EMPTY_STRING,
                 bookPublisher = EMPTY_STRING,
                 bookDescription = EMPTY_STRING,
@@ -68,49 +75,51 @@ class BookServiceImpl(
                 bookCode = EMPTY_STRING
             )
             modifiedBook = BookMapper.toBook(book, bookRequestDto, GenerationService.generateCode())
-             coreEntityDao.findEntityById(book.bookId)?.let {
-                 response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Entity already exist"))
-             } ?:run{
-
-             CoreEntity(
-                 coreEntityId = book.bookId,
-                 createDate = now(),
-                 deleteDate = LOCALDATETIME_NULL,
-                 status  = StatusEnum.BOOK_ACTUAL
-             )
-             }
-
-//            inTransaction {
-//                bookDao.save(modifiedBook)
-//                coreEntity.save()
-//            }
+            saveInDB(coreEntity, modifiedBook)
         }
 
         response.responseEntity = BookMapper.mapBookToBookDTO(modifiedBook)
         return response
     }
 
-    override fun deleteBook(bookCode: CreatedBookDto): CreatedBookDto {
+
+    @Transactional
+    fun saveInDB(coreEntity: CoreEntity, book: Book) {
+        bookDao.save(book)
+        coreEntityDao.save(coreEntity)
+    }
+
+    override fun bookOutOfStock(bookCode: CreatedBookDto): CreatedBookDto {
         TODO("Not yet implemented")
     }
 
-    override fun getBook(bookName: String):HttpResponseBody<CreatedBookDto> {
+    override fun getBook(bookName: String): HttpResponseBody<CreatedBookDto> {
         val response: HttpResponseBody<CreatedBookDto> = BookFindDTO()
         val bookDTOList: List<CreatedBookDto?> = bookDao.findByName(bookName)
-        if (bookDTOList.isEmpty()){
+        if (bookDTOList.isEmpty()) {
             response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
-        }else{
+        } else {
             response.responseEntity = bookDTOList[0]
         }
         return response
     }
 
 
-    override fun getAllBooks(): List<CreatedBookDto> {
-        TODO("Not yet implemented")
+    override fun getAllBooks(): HttpResponseBody<CreatedBookDto> {
+        val response: HttpResponseBody<CreatedBookDto> = BookFindDTO()
+        val bookDTOList: List<CreatedBookDto?> = bookDao.findAllBooks()
+        if (bookDTOList.isEmpty()) {
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Books not found"))
+        } else {
+            bookDTOList.forEach { bookDTO ->
+                response.responseEntity = bookDTO;
+                return response
+            }
+
+        }
+
+        return response
     }
 
-    override fun updateBook(bookDTO: CreatedBookDto): CreatedBookDto {
-        TODO("Not yet implemented")
-    }
+
 }
