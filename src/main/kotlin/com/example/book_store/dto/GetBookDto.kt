@@ -6,25 +6,11 @@ import com.example.book_store.models.enum.GenreEnum
 import java.io.Serializable
 import java.math.BigDecimal
 
-data class CreateOrUpdateBookRequestDto(
-    val genre: GenreEnum,
-
-    val bookPublisher:String,
-
-    val bookPrice: BigDecimal,
-
-    val bookDescription:String,
-
-    val bookPages:Int,
-
-    val bookQuantity: Int,
-
-    val bookName:String,
-
-    val bookCode:String?
+data class GetBookRequestDto(
+    val bookName:String?,
 ) : Serializable
 
-data class CreatedBookDto(
+data class GetBookDto(
     val genre:GenreEnum ,
 
     val bookPublisher:String,
@@ -40,9 +26,12 @@ data class CreatedBookDto(
     val bookName:String,
 
     val bookCode:String
-) : ResponseDto
+) : Serializable
 
+data class ListBookDto(
+    val listBookDto: List<GetBookDto?>
+):ResponseDto
 
-data class CreateOrUpdateBookResponse(
+data class GetBookResponse(
     private val httpRequestId: RequestId = EMPTY_STRING
-) : HttpResponseBody<CreatedBookDto>(httpRequestId)
+) : HttpResponseBody<ListBookDto>(httpRequestId)

@@ -5,6 +5,8 @@ import com.example.book_store.constant.SysConst.EMPTY_STRING
 import com.example.book_store.constant.SysConst.INTEGER_ZERO
 import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
 import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
+import com.example.book_store.constant.SysConst.OC_BUGS
+import com.example.book_store.constant.SysConst.OC_OK
 import com.example.book_store.dao.BookDao
 import com.example.book_store.dao.CoreEntityDao
 import com.example.book_store.dto.*
@@ -68,7 +70,6 @@ class BookServiceImpl(
 
     @Transactional
     fun saveInDB(coreEntity: CoreEntity, book: Book) {
-
         coreEntityDao.save(coreEntity)
         bookDao.save(book)
     }
@@ -77,32 +78,34 @@ class BookServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getBook(bookName: String): HttpResponseBody<CreatedBookDto> {
-        val response: HttpResponseBody<CreatedBookDto> = BookFindDTO()
-        val bookDTOList: List<CreatedBookDto?> = bookDao.findByName(bookName)
-        if (bookDTOList.isEmpty()) {
-            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
-        } else {
-            response.responseEntity = bookDTOList[0]
+
+    @Transactional
+    override fun getBook(bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto> {
+        val response: HttpResponseBody<ListBookDto> = GetBookResponse()
+        lateinit var foundBooks: ListBookDto
+        bookRequestDto.bookName?.let {
+            val getBook: MutableCollection<Book> = bookDao.findByName(bookRequestDto.bookName)
+            getBook.isNotEmpty().let {
+                foundBooks = BookMapper.mapBookToBookListDto(getBook)
+                response.responseEntity =  foundBooks
+            }
+            getBook.isEmpty().let{
+                response.message = "Book not found"
+                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
+            }
+        }?:run{
+            response.message = "Name is empty"
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Null name"))
+
         }
+
+        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
         return response
     }
 
 
     override fun getAllBooks(): HttpResponseBody<CreatedBookDto> {
-        val response: HttpResponseBody<CreatedBookDto> = BookFindDTO()
-        val bookDTOList: List<CreatedBookDto?> = bookDao.findAllBooks()
-        if (bookDTOList.isEmpty()) {
-            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Books not found"))
-        } else {
-            bookDTOList.forEach { bookDTO ->
-                response.responseEntity = bookDTO;
-                return response
-            }
-
-        }
-
-        return response
+        TODO("Not yet implemented")
     }
 
 

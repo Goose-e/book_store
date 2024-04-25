@@ -1,8 +1,6 @@
 package com.example.book_store.controller
 
-import com.example.book_store.dto.CreateOrUpdateBookRequestDto
-import com.example.book_store.dto.CreatedBookDto
-import com.example.book_store.dto.HttpResponseBody
+import com.example.book_store.dto.*
 import com.example.book_store.service.BookService
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*
@@ -20,9 +18,16 @@ class CreateBookController(
     }
 
     @GetMapping("/getByBookName/{bookName}")
-    fun getBookByBookName(@PathVariable(value = "bookName") bookName: String):HttpResponseBody<CreatedBookDto>  {
-       val bookFinded = bookService.getBook(bookName = bookName)
+    fun getBookByBookName(@PathVariable(value = "bookName")BookRequestDto: GetBookRequestDto):HttpResponseBody<ListBookDto>  {
+       val bookFounded = bookService.getBook(BookRequestDto)
 
-        return bookFinded
+        return bookFounded
+    }
+
+    @GetMapping("/getByBookName/books")
+    fun getAllBook(@PathVariable(value = "bookName")BookRequestDto: GetBookRequestDto):HttpResponseBody<ListBookDto>  {
+        val bookFounded = bookService.getBook(BookRequestDto)
+
+        return bookFounded
     }
 }

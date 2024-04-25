@@ -2,6 +2,8 @@ package com.example.book_store.map
 
 import com.example.book_store.dto.CreateOrUpdateBookRequestDto
 import com.example.book_store.dto.CreatedBookDto
+import com.example.book_store.dto.GetBookDto
+import com.example.book_store.dto.ListBookDto
 import com.example.book_store.models.Book
 
 
@@ -32,6 +34,24 @@ class BookMapper {
                     genre = bookDto.genre,
                     bookCode = code
                     )
+
+        fun mapBookToBookListDto(book:MutableCollection<Book>): ListBookDto =  ListBookDto(
+                listBookDto = book.filterNotNull().map { BookMapper.mapBookFromListToBookDTO(it) }
+        )
+
+        fun mapBookFromListToBookDTO(book: Book?): GetBookDto? = book?.let {
+            GetBookDto(
+                bookName = it.bookName,
+                bookPublisher = book.bookPublisher,
+                bookDescription = book.bookDescription,
+                bookQuantity = book.bookQuantity,
+                bookPrice = book.bookPrice,
+                bookPages = book.bookPages,
+                genre = book.genre,
+                bookCode = book.bookCode
+            )
+        }
+
     }
 
 }
