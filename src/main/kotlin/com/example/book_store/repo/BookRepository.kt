@@ -11,7 +11,7 @@ interface BookRepository : CrudRepository<Book, Int> {
     @Query("select b from Book b where b.bookCode = :code")
     fun findByCode(@Param("code") bookCode: String?): Book?
 
-    @Query("select b.bookName from Book b where b.bookName = :book")
+    @Query("select b.bookName,b.bookPrice,b.bookPublisher from Book b where b.bookName = :book")
     fun findByBookName(@Param("book") book: String): MutableCollection<Book>
 
     @Query("select b.bookName,b.bookDescription,b.bookPrice,b.bookPublisher from Book b group by b.bookName")
