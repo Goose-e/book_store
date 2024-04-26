@@ -1,15 +1,15 @@
-package com.example.book_store.service.impl
+package com.example.book_store.service
 
-import com.example.book_store.dto.UserDto
+import com.example.book_store.dto.*
 import com.example.book_store.exceptions.UserNotFoundException
 import com.example.book_store.models.User
 import org.springframework.http.ResponseEntity
 
 
 interface IUserService{
-
+    fun authenticateUser(loginRequest: LoginUserDto): ResponseEntity<*>
     fun getAllUsers(): MutableIterable<User>
-
+    fun registerUser(newUserDto: NewUserRequestDto): HttpResponseBody<NewUserDto>
     @Throws(UserNotFoundException::class)
     fun getUserById(userId: Long?): ResponseEntity<UserDto?>?
 

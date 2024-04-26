@@ -2,6 +2,7 @@ package com.example.book_store.jwt
 
 import com.example.book_store.repo.UserRepository
 import io.jsonwebtoken.*
+import io.jsonwebtoken.security.Keys.secretKeyFor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -27,16 +28,16 @@ class JwtProvider(
 
     fun generateJwtToken(username: String): String {
         return Jwts.builder()
-            .  setSubject(username)
+            .setSubject(username)
             .setIssuedAt(Date())
             .setExpiration(Date((Date()).getTime() + jwtExpiration!! * 1000))
-            .signWith(SignatureAlgorithm.HS512, jwtSecret)
+            .signWith(SignatureAlgorithm.HS512, secretKeyFor(SignatureAlgorithm.HS512))
             .compact()
     }
 
     fun validateJwtToken(authToken: String): Boolean {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).build().parseClaimsJws(authToken)
+            Jwts.parser().setSigningKey(secretKeyFor(SignatureAlgorithm.HS512)).build().parseClaimsJws(authToken)
             return true
         } catch (e: SignatureException) {
             logger.error("Invalid JWT signature -> Message: {} ", e)
@@ -55,7 +56,7 @@ class JwtProvider(
 
     fun getUserNameFromJwtToken(token: String): String {
         return Jwts.parser()
-            .setSigningKey(jwtSecret)
+            .verifyWith(secretKeyFor(SignatureAlgorithm.HS512))
             .build()
             .parseClaimsJws(token)
             .payload.getSubject()
