@@ -86,8 +86,8 @@ class BookServiceImpl(
         bookRequestDto.bookName?.let {
             val getBook: MutableCollection<Book> = bookDao.findByName(bookRequestDto.bookName)
             getBook.isNotEmpty().let {
-               // foundBooks = BookMapper.mapBookToBookListDto(getBook)
-                foundBooks = BookMapper.mapBookToBookListDto(getBook)
+                 val listBookDto  =  getBook.map{ BookMapper.mapBookFromListToBookDTO(it)}
+                foundBooks = BookMapper.mapBookToBookListDto(listBookDto)
                 response.responseEntity =  foundBooks
             }
             getBook.isEmpty().let{

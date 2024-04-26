@@ -35,8 +35,8 @@ class BookMapper {
                     bookCode = code
                     )
 
-        fun mapBookToBookListDto(book:MutableCollection<Book>): ListBookDto =  ListBookDto(
-            listBookDto = book.filterNotNull().map { BookMapper.mapBookFromListToBookDTO(it) }
+        fun mapBookToBookListDto(book: List<GetBookDto?>): ListBookDto =  ListBookDto(
+            listBookDto = book
         )
 
         fun mapBookFromListToBookDTO(book: Book?): GetBookDto? = book?.let {
@@ -44,11 +44,9 @@ class BookMapper {
                 bookName = it.bookName,
                 bookPublisher = book.bookPublisher,
                 bookDescription = book.bookDescription,
-                bookQuantity = book.bookQuantity,
                 bookPrice = book.bookPrice,
-                bookPages = book.bookPages,
                 genre = book.genre,
-                bookCode = book.bookCode
+
             )
         }
 

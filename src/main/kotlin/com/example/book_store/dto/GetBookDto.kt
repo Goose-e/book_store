@@ -19,13 +19,7 @@ data class GetBookDto(
 
     val bookDescription:String,
 
-    val bookPages:Int,
-
-    val bookQuantity: Int,
-
     val bookName:String,
-
-    val bookCode:String
 ) : Serializable
 
 data class ListBookDto(

@@ -1,5 +1,6 @@
 package com.example.book_store.dao
 
+import com.example.book_store.dto.GetBookDto
 import com.example.book_store.models.Book
 import com.example.book_store.repo.BookRepository
 import org.springframework.stereotype.Component
