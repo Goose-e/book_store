@@ -24,9 +24,9 @@ class CreateBookController(
         return bookFounded
     }
 
-    @GetMapping("/getByBookName/books")
-    fun getAllBook(@PathVariable(value = "bookName")BookRequestDto: GetBookRequestDto):HttpResponseBody<ListBookDto>  {
-        val bookFounded = bookService.getBook(BookRequestDto)
+    @GetMapping("/getAllBooks/books")
+    fun getAllBook():HttpResponseBody<ListBookDto>  {
+        val bookFounded = bookService.getAllBooks()
         return bookFounded
     }
 }

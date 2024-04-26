@@ -6,5 +6,5 @@ interface BookService {
     fun addBook(bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto>
     fun bookOutOfStock(bookCode: CreatedBookDto): CreatedBookDto
     fun getBook(BookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto>
-    fun getAllBooks(): HttpResponseBody<CreatedBookDto>
+    fun getAllBooks(): HttpResponseBody<ListBookDto>
 }

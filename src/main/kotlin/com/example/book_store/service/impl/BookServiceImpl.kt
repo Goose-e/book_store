@@ -84,16 +84,17 @@ class BookServiceImpl(
         val response: HttpResponseBody<ListBookDto> = GetBookResponse()
         lateinit var foundBooks: ListBookDto
         bookRequestDto.bookName?.let {
-            val getBook: MutableCollection<Book> = bookDao.findByName(bookRequestDto.bookName)
-            getBook.isNotEmpty().let {
-                 val listBookDto  =  getBook.map{ BookMapper.mapBookFromListToBookDTO(it)}
+            val getBook: MutableCollection<Book?> = bookDao.findByName(bookRequestDto.bookName)
+            if (getBook.isNotEmpty()) {
+                val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it) }
                 foundBooks = BookMapper.mapBookToBookListDto(listBookDto)
-                response.responseEntity =  foundBooks
-            }
-            getBook.isEmpty().let{
+                response.responseEntity = foundBooks
+                response.message = "Book found"
+            } else {
                 response.message = "Book not found"
                 response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
             }
+
         }?:run{
             response.message = "Name is empty"
             response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Null name"))
@@ -105,9 +106,23 @@ class BookServiceImpl(
     }
 
 
-    override fun getAllBooks(): HttpResponseBody<CreatedBookDto> {
-        TODO("Not yet implemented")
-    }
+    override fun getAllBooks(): HttpResponseBody<ListBookDto> {
+        val response: HttpResponseBody<ListBookDto> = GetBookResponse()
 
+        val getBook: MutableCollection<Book?> = bookDao.findAllBooks()
+        if (getBook.isNotEmpty())  {
+            val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it) }
+            response.responseEntity = BookMapper.mapBookToBookListDto(listBookDto)
+            response.message = "Books"
+        }
+      else{
+            response.message = "Books not found"
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Books not found"))
+        }
+
+            if (response.errors.isNotEmpty()) {response.responseCode = OC_BUGS} else {response.responseCode = OC_OK}
+            return response
+
+    }
 
 }
