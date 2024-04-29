@@ -3,6 +3,7 @@ package com.example.book_store.map
 import com.example.book_store.dto.CreateOrUpdateBookRequestDto
 import com.example.book_store.dto.CreatedBookDto
 import com.example.book_store.dto.GetBookDto
+import com.example.book_store.dto.GetBookDtoDB
 import com.example.book_store.models.Book
 
 
@@ -34,13 +35,14 @@ class BookMapper {
                 bookCode = code
             )
 
-        fun mapBookFromListToBookDTO(book: Book): GetBookDto =
+        fun mapBookFromListToBookDTO(book: GetBookDtoDB): GetBookDto =
             GetBookDto(
                 bookName = book.bookName,
                 bookPublisher = book.bookPublisher,
                 bookDescription = book.bookDescription,
                 bookPrice = book.bookPrice,
                 genre = book.genre,
+                bookStatusEnum = book.bookStatusEnum,
                 )
     }
 

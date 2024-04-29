@@ -3,6 +3,7 @@ package com.example.book_store.dto
 import com.example.book_store.constant.RequestId
 import com.example.book_store.constant.SysConst.EMPTY_STRING
 import com.example.book_store.models.enum.GenreEnum
+import com.example.book_store.models.enum.StatusEnum
 import java.io.Serializable
 import java.math.BigDecimal
 
@@ -16,6 +17,16 @@ data class GetBookDto(
     val bookPrice: BigDecimal,
     val bookDescription: String,
     val bookName: String,
+    val bookStatusEnum: StatusEnum
+) : Serializable
+
+data class GetBookDtoDB(
+    val genre: GenreEnum,
+    val bookPublisher: String,
+    val bookPrice: BigDecimal,
+    val bookDescription: String,
+    val bookName: String,
+    val bookStatusEnum: StatusEnum
 ) : Serializable
 
 data class ListBookDto(

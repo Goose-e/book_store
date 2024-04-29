@@ -10,6 +10,8 @@ enum class StatusEnum(
     // TODO: delete auto set id in db
     BOOK_ACTUAL(0, "BOOK_CODE", "Book Actual"),
     USER_ACTUAL(1, "USER_ACTUAL", "User Actual"),
+    BOOK_UNAVAILABLE(2, "BOOK_UNAVAILABLE", "Book Unavailable"),
+    USER_CLOSED(3, "USER_CLOSED", "User Closed"),
     ;
 
     companion object {

@@ -83,8 +83,7 @@ class BookServiceImpl(
     override fun getBook(bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto> {
         val response: HttpResponseBody<ListBookDto> = GetBookResponse()
         lateinit var foundBooks: ListBookDto
-
-        val getBook: MutableCollection<Book> = bookDao.findByName(bookRequestDto.bookName)
+        val getBook: MutableCollection<GetBookDtoDB> = bookDao.findByName(bookRequestDto.bookName)
         if (getBook.isNotEmpty()) {
             val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it) }
             foundBooks = ListBookDto(listBookDto = listBookDto)
@@ -103,7 +102,7 @@ class BookServiceImpl(
     override fun getAllBooks(): HttpResponseBody<ListBookDto> {
         val response: HttpResponseBody<ListBookDto> = GetBookResponse()
 
-        val getBook: MutableCollection<Book> = bookDao.findAllBooks()
+        val getBook: MutableCollection<GetBookDtoDB> = bookDao.findAllBooks()
         if (getBook.isNotEmpty()) {
             val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it) }
             response.responseEntity = ListBookDto(listBookDto = listBookDto)
