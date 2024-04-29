@@ -7,24 +7,20 @@ import java.io.Serializable
 import java.math.BigDecimal
 
 data class GetBookRequestDto(
-    val bookName:String?,
+    val bookName: String,
 ) : Serializable
 
 data class GetBookDto(
-    val genre:GenreEnum ,
-
-    val bookPublisher:String,
-
+    val genre: GenreEnum,
+    val bookPublisher: String,
     val bookPrice: BigDecimal,
-
-    val bookDescription:String,
-
-    val bookName:String,
+    val bookDescription: String,
+    val bookName: String,
 ) : Serializable
 
 data class ListBookDto(
-    val listBookDto: List<GetBookDto?>
-):ResponseDto
+    val listBookDto: List<GetBookDto>
+) : ResponseDto
 
 data class GetBookResponse(
     private val httpRequestId: RequestId = EMPTY_STRING

@@ -3,7 +3,6 @@ package com.example.book_store.map
 import com.example.book_store.dto.CreateOrUpdateBookRequestDto
 import com.example.book_store.dto.CreatedBookDto
 import com.example.book_store.dto.GetBookDto
-import com.example.book_store.dto.ListBookDto
 import com.example.book_store.models.Book
 
 
@@ -12,7 +11,7 @@ class BookMapper {
 
     companion object {
         fun mapBookToBookDTO(book: Book): CreatedBookDto = CreatedBookDto(
-        bookName = book.bookName,
+            bookName = book.bookName,
             bookPublisher = book.bookPublisher,
             bookDescription = book.bookDescription,
             bookQuantity = book.bookQuantity,
@@ -23,33 +22,26 @@ class BookMapper {
         )
 
         fun toBook(book: Book, bookDto: CreateOrUpdateBookRequestDto, code: String): Book =
-                book.copy(
+            book.copy(
 
-                    bookName = bookDto.bookName,
-                    bookPublisher = bookDto.bookPublisher,
-                    bookDescription = bookDto.bookDescription,
-                    bookQuantity = bookDto.bookQuantity,
-                    bookPrice = bookDto.bookPrice,
-                    bookPages = bookDto.bookPages,
-                    genre = bookDto.genre,
-                    bookCode = code
-                    )
+                bookName = bookDto.bookName,
+                bookPublisher = bookDto.bookPublisher,
+                bookDescription = bookDto.bookDescription,
+                bookQuantity = bookDto.bookQuantity,
+                bookPrice = bookDto.bookPrice,
+                bookPages = bookDto.bookPages,
+                genre = bookDto.genre,
+                bookCode = code
+            )
 
-        fun mapBookToBookListDto(book: List<GetBookDto?>): ListBookDto =  ListBookDto(
-            listBookDto = book
-        )
-
-        fun mapBookFromListToBookDTO(book: Book?): GetBookDto? = book?.let {
+        fun mapBookFromListToBookDTO(book: Book): GetBookDto =
             GetBookDto(
-                bookName = it.bookName,
+                bookName = book.bookName,
                 bookPublisher = book.bookPublisher,
                 bookDescription = book.bookDescription,
                 bookPrice = book.bookPrice,
                 genre = book.genre,
-
-            )
-        }
-
+                )
     }
 
 }

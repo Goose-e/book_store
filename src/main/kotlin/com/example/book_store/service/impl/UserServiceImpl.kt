@@ -49,7 +49,7 @@ class UserServiceImpl (val authenticationManager: AuthenticationManager,
             )
             SecurityContextHolder.getContext().authentication = authentication
             val jwt: String = jwtProvider.generateJwtToken(user.login)
-            val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority(user.userRole.name))
+            val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority(user.userRole.getCode()))
             return ResponseEntity.ok(JwtResponse(jwt, user.login, authorities))
         } ?: run {
             return ResponseEntity(

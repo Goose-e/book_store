@@ -12,9 +12,9 @@ interface BookRepository : CrudRepository<Book, Int> {
     fun findByCode(@Param("code") bookCode: String?): Book?
 
     @Query("select b from Book b where b.bookName = :book")
-    fun findByBookName(@Param("book") book: String): MutableCollection<Book?>
+    fun findByBookName(@Param("book") book: String): MutableCollection<Book>
 
     @Query("select b  from Book b group by b.bookId,b.bookName")
-    fun findAllBooks(): MutableCollection<Book?>
+    fun findAllBooks(): MutableCollection<Book>
 
 }

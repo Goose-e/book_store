@@ -42,7 +42,7 @@ class BookServiceImpl(
         } ?: run {
 
             val coreEntity = CoreEntity(
-                coreEntityId =generateEntityId() ,
+                coreEntityId = generateEntityId(),
                 createDate = now(),
                 deleteDate = LOCALDATETIME_NULL,
                 status = StatusEnum.BOOK_ACTUAL
@@ -57,7 +57,7 @@ class BookServiceImpl(
                 bookPrice = BIGDECIMAL_ZERO,
                 bookPages = INTEGER_ZERO,
                 genre = NO_GENRE,
-                bookCode = EMPTY_STRING ,
+                bookCode = EMPTY_STRING,
             )
 
             modifiedBook = BookMapper.toBook(book, bookRequestDto, GenerationService.generateCode())
@@ -83,22 +83,16 @@ class BookServiceImpl(
     override fun getBook(bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto> {
         val response: HttpResponseBody<ListBookDto> = GetBookResponse()
         lateinit var foundBooks: ListBookDto
-        bookRequestDto.bookName?.let {
-            val getBook: MutableCollection<Book?> = bookDao.findByName(bookRequestDto.bookName)
-            if (getBook.isNotEmpty()) {
-                val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it) }
-                foundBooks = BookMapper.mapBookToBookListDto(listBookDto)
-                response.responseEntity = foundBooks
-                response.message = "Book found"
-            } else {
-                response.message = "Book not found"
-                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
-            }
 
-        }?:run{
-            response.message = "Name is empty"
-            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Null name"))
-
+        val getBook: MutableCollection<Book> = bookDao.findByName(bookRequestDto.bookName)
+        if (getBook.isNotEmpty()) {
+            val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it) }
+            foundBooks = ListBookDto(listBookDto = listBookDto)
+            response.responseEntity = foundBooks
+            response.message = "Book found"
+        } else {
+            response.message = "Book not found"
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
         }
 
         if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
@@ -109,19 +103,22 @@ class BookServiceImpl(
     override fun getAllBooks(): HttpResponseBody<ListBookDto> {
         val response: HttpResponseBody<ListBookDto> = GetBookResponse()
 
-        val getBook: MutableCollection<Book?> = bookDao.findAllBooks()
-        if (getBook.isNotEmpty())  {
+        val getBook: MutableCollection<Book> = bookDao.findAllBooks()
+        if (getBook.isNotEmpty()) {
             val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it) }
-            response.responseEntity = BookMapper.mapBookToBookListDto(listBookDto)
+            response.responseEntity = ListBookDto(listBookDto = listBookDto)
             response.message = "Books"
-        }
-      else{
+        } else {
             response.message = "Books not found"
             response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Books not found"))
         }
 
-            if (response.errors.isNotEmpty()) {response.responseCode = OC_BUGS} else {response.responseCode = OC_OK}
-            return response
+        if (response.errors.isNotEmpty()) {
+            response.responseCode = OC_BUGS
+        } else {
+            response.responseCode = OC_OK
+        }
+        return response
 
     }
 

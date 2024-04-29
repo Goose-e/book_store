@@ -11,7 +11,6 @@ import java.math.BigDecimal
 data class OrderItem(
     @Id
     @Column(name = "order_item_id")
-
     val orderItemId:Long,
     @Column(name = "book_id")
     val bookId:Long,
@@ -25,5 +24,4 @@ data class OrderItem(
     val orderItemAmount:Int,
     @Column(name = "order_item_total_price")
     val orderItemTotalPrice:BigDecimal
-
 )
