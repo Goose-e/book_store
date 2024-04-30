@@ -1,4 +1,4 @@
-package com.example.book_store.dto
+package com.example.book_store.dto.userDto
 
 import java.io.Serializable
 

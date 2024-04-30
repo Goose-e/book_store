@@ -10,11 +10,11 @@ data class CartItem(
     @Id
     @Column(name = "cart_items_id")
 
-    val cartItemsId:Long,
+    val cartItemsId:Long?,
     @Column(name = "book_id")
-    val bookId:Long,
+    val bookId:Long?,
     @Column(name = "cart_id")
-    val cartId:Long,
+    val cartId:Long?,
     @Column(name = "cart_item_code")
     val cartItemsCode:String
 )

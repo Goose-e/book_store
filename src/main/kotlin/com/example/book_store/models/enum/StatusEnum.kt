@@ -12,6 +12,7 @@ enum class StatusEnum(
     USER_ACTUAL(1, "USER_ACTUAL", "User Actual"),
     BOOK_UNAVAILABLE(2, "BOOK_UNAVAILABLE", "Book Unavailable"),
     USER_CLOSED(3, "USER_CLOSED", "User Closed"),
+    USER_ITEM(4, "ITEM_ACTUAL", "Item Actual"),
     ;
 
     companion object {

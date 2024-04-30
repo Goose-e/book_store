@@ -28,6 +28,7 @@ class WebSecurityConfig(
     fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
     }
+
     @Bean
     fun authenticationJwtTokenFilter(): JwtAuthTokenFilter {
         return JwtAuthTokenFilter()

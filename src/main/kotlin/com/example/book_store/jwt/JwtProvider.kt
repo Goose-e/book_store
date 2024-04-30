@@ -1,6 +1,5 @@
 package com.example.book_store.jwt
 
-import com.example.book_store.repo.UserRepository
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys.secretKeyFor
 import org.slf4j.Logger
@@ -12,13 +11,9 @@ import java.util.*
 
 @Component
 class JwtProvider(
-    var userRepository: UserRepository
-
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(JwtProvider::class.java)
-
-
 
     @Value("\${assm.app.jwtSecret}")
     lateinit var jwtSecret: String

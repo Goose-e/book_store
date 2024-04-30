@@ -1,9 +1,9 @@
 package com.example.book_store.controller
 
 import com.example.book_store.dto.HttpResponseBody
-import com.example.book_store.dto.LoginUserDto
-import com.example.book_store.dto.NewUserDto
-import com.example.book_store.dto.NewUserRequestDto
+import com.example.book_store.dto.userDto.LoginUserDto
+import com.example.book_store.dto.userDto.NewUserDto
+import com.example.book_store.dto.userDto.NewUserRequestDto
 import com.example.book_store.service.IUserService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity

@@ -9,7 +9,8 @@ import com.example.book_store.constant.SysConst.OC_BUGS
 import com.example.book_store.constant.SysConst.OC_OK
 import com.example.book_store.dao.BookDao
 import com.example.book_store.dao.CoreEntityDao
-import com.example.book_store.dto.*
+import com.example.book_store.dto.HttpResponseBody
+import com.example.book_store.dto.bookDto.*
 import com.example.book_store.map.BookMapper
 import com.example.book_store.models.Book
 import com.example.book_store.models.CoreEntity
@@ -63,6 +64,7 @@ class BookServiceImpl(
             modifiedBook = BookMapper.toBook(book, bookRequestDto, GenerationService.generateCode())
             saveInDB(coreEntity, modifiedBook)
         }
+        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
         response.responseEntity = BookMapper.mapBookToBookDTO(modifiedBook)
         return response
     }

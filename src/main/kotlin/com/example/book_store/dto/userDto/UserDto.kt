@@ -1,4 +1,4 @@
-package com.example.book_store.dto
+package com.example.book_store.dto.userDto
 
 import com.example.book_store.models.enum.RoleEnum
 

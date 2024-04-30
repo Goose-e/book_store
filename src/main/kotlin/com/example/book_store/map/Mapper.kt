@@ -1,7 +1,7 @@
 package com.example.book_store.map
 
-import com.example.book_store.dto.NewUserDto
-import com.example.book_store.dto.UserDto
+import com.example.book_store.dto.userDto.NewUserDto
+import com.example.book_store.dto.userDto.UserDto
 import com.example.book_store.models.User
 
 

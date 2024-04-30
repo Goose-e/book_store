@@ -13,10 +13,15 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
 
-class JwtAuthTokenFilter : OncePerRequestFilter() {
 
-    private lateinit var tokenProvider: JwtProvider
-    private lateinit var userDetailsService: UserDetailsService
+class JwtAuthTokenFilter (
+    val tokenProvider: JwtProvider,
+
+): OncePerRequestFilter() {
+    constructor() : this(JwtProvider())
+
+    lateinit var userDetailsService: UserDetailsService
+
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
         request: HttpServletRequest,

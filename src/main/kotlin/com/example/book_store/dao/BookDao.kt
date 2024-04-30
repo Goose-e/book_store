@@ -1,6 +1,6 @@
 package com.example.book_store.dao
 
-import com.example.book_store.dto.GetBookDtoDB
+import com.example.book_store.dto.bookDto.GetBookDtoDB
 import com.example.book_store.models.Book
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.repo.BookRepository

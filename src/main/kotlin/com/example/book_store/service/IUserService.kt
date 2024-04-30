@@ -1,6 +1,10 @@
 package com.example.book_store.service
 
 import com.example.book_store.dto.*
+import com.example.book_store.dto.userDto.LoginUserDto
+import com.example.book_store.dto.userDto.NewUserDto
+import com.example.book_store.dto.userDto.NewUserRequestDto
+import com.example.book_store.dto.userDto.UserDto
 import com.example.book_store.exceptions.UserNotFoundException
 import com.example.book_store.models.User
 import org.springframework.http.ResponseEntity
