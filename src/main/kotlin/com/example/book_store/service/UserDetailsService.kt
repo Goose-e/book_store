@@ -34,4 +34,3 @@ class UserDetailsService (
     }
 
 }
-//front на чём-то(возможно view js(angular js))

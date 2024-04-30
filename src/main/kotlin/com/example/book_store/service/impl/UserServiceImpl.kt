@@ -4,11 +4,13 @@ import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
 import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
 import com.example.book_store.constant.SysConst.OC_BUGS
 import com.example.book_store.constant.SysConst.OC_OK
+import com.example.book_store.dao.CartDao
 import com.example.book_store.dao.CoreEntityDao
 import com.example.book_store.dao.UserDao
 import com.example.book_store.dto.*
 import com.example.book_store.jwt.JwtProvider
 import com.example.book_store.map.Mapper
+import com.example.book_store.models.Cart
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.User
 import com.example.book_store.models.enum.RoleEnum.USER
@@ -16,6 +18,7 @@ import com.example.book_store.models.enum.StatusEnum.USER_ACTUAL
 import com.example.book_store.repo.UserRepository
 import com.example.book_store.response.JwtResponse
 import com.example.book_store.response.ResponseMessage
+import com.example.book_store.service.GenerationService
 import com.example.book_store.service.GenerationService.Companion.generateEntityId
 import com.example.book_store.service.IUserService
 import org.dbs.validator.ErrorInfo
@@ -38,7 +41,8 @@ class UserServiceImpl (val authenticationManager: AuthenticationManager,
                        val encoder: PasswordEncoder,
                        val jwtProvider: JwtProvider,
                        val coreEntityDao: CoreEntityDao,
-                       val userDao: UserDao): IUserService {
+                       val userDao: UserDao,
+                        val cartDao:CartDao): IUserService {
    override fun authenticateUser(loginRequest: LoginUserDto): ResponseEntity<*> {
 
         val user: User? = userRepository.findByLogin(loginRequest.login)
@@ -86,8 +90,18 @@ class UserServiceImpl (val authenticationManager: AuthenticationManager,
                 userRole = USER
 
             )
-
-            saveInDB(coreEntity, user)
+            val coreEntityCart = CoreEntity(
+                coreEntityId = generateEntityId(),
+                createDate = now(),
+                deleteDate = LOCALDATETIME_NULL,
+                status = USER_ACTUAL
+            )
+            val cart = Cart(
+                cartId = coreEntityCart.coreEntityId,
+                userId = user.userId,
+                cartCode = GenerationService.generateCode()
+            )
+            saveInDB(coreEntity, user,coreEntityCart,cart)
             response.responseEntity = Mapper.mapUserToUserDTO(user)
             response.message = "User Created"
         }
@@ -103,8 +117,10 @@ class UserServiceImpl (val authenticationManager: AuthenticationManager,
         TODO("Not yet implemented")
     }
     @Transactional
-    fun saveInDB(coreEntity: CoreEntity, user: User) {
+    fun saveInDB(coreEntity: CoreEntity, user: User,coreEntityCart:CoreEntity,cart:Cart) {
         coreEntityDao.save(coreEntity)
         userDao.save(user)
+        coreEntityDao.save(coreEntityCart)
+        cartDao.save(cart)
     }
 }

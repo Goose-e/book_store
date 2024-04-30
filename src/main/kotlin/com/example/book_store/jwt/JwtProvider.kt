@@ -30,7 +30,7 @@ class JwtProvider(
         return Jwts.builder()
             .setSubject(username)
             .setIssuedAt(Date())
-            .setExpiration(Date((Date()).getTime() + jwtExpiration!! * 1000))
+            .setExpiration(Date((Date()).time + jwtExpiration!! * 1000))
             .signWith(SignatureAlgorithm.HS512, secretKeyFor(SignatureAlgorithm.HS512))
             .compact()
     }
@@ -59,6 +59,6 @@ class JwtProvider(
             .verifyWith(secretKeyFor(SignatureAlgorithm.HS512))
             .build()
             .parseClaimsJws(token)
-            .payload.getSubject()
+            .payload.subject
     }
 }

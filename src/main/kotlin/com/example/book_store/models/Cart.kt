@@ -10,10 +10,10 @@ import jakarta.persistence.Table
 data class Cart(
     @Id
     @Column(name = "cart_id")
+    val cartId:Long?,
 
-    val cartId:Long,
     @Column(name = "user_id")
-    val userId:Long,
+    val userId:Long?,
     @Column(name = "cart_code")
     val cartCode:String
 )

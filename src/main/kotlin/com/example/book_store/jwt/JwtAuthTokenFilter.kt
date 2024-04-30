@@ -13,9 +13,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
 
-class JwtAuthTokenFilter (
-
-) : OncePerRequestFilter() {
+class JwtAuthTokenFilter : OncePerRequestFilter() {
 
     private lateinit var tokenProvider: JwtProvider
     private lateinit var userDetailsService: UserDetailsService
