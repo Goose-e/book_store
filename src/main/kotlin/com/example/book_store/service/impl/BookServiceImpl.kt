@@ -74,8 +74,27 @@ class BookServiceImpl(
         bookDao.save(book)
     }
 
-    override fun bookOutOfStock(bookCode: CreatedBookDto): CreatedBookDto {
-        TODO("Not yet implemented")
+    override fun bookOutOfStock(bookCode: DeleteBookRequestDto): HttpResponseBody<DeleteBookDto>{
+        val response: HttpResponseBody<DeleteBookDto> = DelBookResponse()
+        lateinit var deletedBook: DeleteBookDto
+        bookCode.bookCode?.let { code ->
+            bookDao.findByCodeForDel(code)?.let { ent ->
+             coreEntityDao.save(BookMapper.mapDeleteEntToEnt(ent))
+              bookDao.findByCode(code)?.let {
+                  deletedBook = BookMapper.mapBookToDelBookDTO(it,ent)
+                  response.responseEntity = deletedBook
+                  response.message = "Book deleted"
+
+              }
+
+            }
+                ?:run{
+                    response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
+                    response.message = "Book not found"
+                }
+        }
+        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
+        return response
     }
 
 

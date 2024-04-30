@@ -17,6 +17,11 @@ class CreateBookController(
         bookService.addBook(bookRequestDto)
     }
 
+    @PostMapping("/deleteBook")
+    fun deleteBook(@Valid @RequestBody bookRequestDto: DeleteBookRequestDto): HttpResponseBody<DeleteBookDto> = run{
+        bookService.bookOutOfStock(bookRequestDto)
+    }
+
     @GetMapping("/getByBookName/{bookName}")
     fun getBookByBookName(@PathVariable(value = "bookName")BookRequestDto: GetBookRequestDto):HttpResponseBody<ListBookDto>  {
        val bookFounded = bookService.getBook(BookRequestDto)

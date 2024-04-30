@@ -1,10 +1,9 @@
 package com.example.book_store.map
 
-import com.example.book_store.dto.CreateOrUpdateBookRequestDto
-import com.example.book_store.dto.CreatedBookDto
-import com.example.book_store.dto.GetBookDto
-import com.example.book_store.dto.GetBookDtoDB
+import com.example.book_store.dto.*
 import com.example.book_store.models.Book
+import com.example.book_store.models.CoreEntity
+import com.example.book_store.models.enum.StatusEnum
 
 
 class BookMapper {
@@ -20,6 +19,11 @@ class BookMapper {
             bookPages = book.bookPages,
             genre = book.genre,
             bookCode = book.bookCode
+        )
+        fun mapBookToDelBookDTO(book: Book, ent :CoreEntity): DeleteBookDto = DeleteBookDto(
+            bookName = book.bookName,
+            bookCode = book.bookCode,
+            bookStatusEnum = ent.status
         )
 
         fun toBook(book: Book, bookDto: CreateOrUpdateBookRequestDto, code: String): Book =
@@ -44,6 +48,11 @@ class BookMapper {
                 genre = book.genre,
                 bookStatusEnum = book.bookStatusEnum,
                 )
+
+        fun mapDeleteEntToEnt(core: CoreEntity): CoreEntity =
+            core.copy(
+                status = StatusEnum.BOOK_UNAVAILABLE
+            )
     }
 
 }
