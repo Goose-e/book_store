@@ -8,8 +8,7 @@ import jakarta.persistence.Table
 @Table(name = "cart_items")
 data class CartItem(
     @Id
-    @Column(name = "cart_items_id")
-
+    @Column(name = "cart_item_id")
     val cartItemsId:Long?,
     @Column(name = "book_id")
     val bookId:Long?,

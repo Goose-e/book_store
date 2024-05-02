@@ -1,11 +1,16 @@
 package com.example.book_store.jwt
 
-import io.jsonwebtoken.*
-import io.jsonwebtoken.security.Keys.secretKeyFor
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.SignatureAlgorithm.HS512
+import io.jsonwebtoken.UnsupportedJwtException
+import io.jsonwebtoken.security.Keys.hmacShaKeyFor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.nio.charset.StandardCharsets.UTF_8
 import java.security.SignatureException
 import java.util.*
 
@@ -13,26 +18,29 @@ import java.util.*
 class JwtProvider(
 ) {
 
+
     private val logger: Logger = LoggerFactory.getLogger(JwtProvider::class.java)
 
-    @Value("\${assm.app.jwtSecret}")
-    lateinit var jwtSecret: String
-
-    @Value("\${assm.app.jwtExpiration}")
-    var jwtExpiration: Int? = 0
+    @Value("\${app.jwtSecret:2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D}")
+    var jwtSecret: String = "2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D"
+    final val key = hmacShaKeyFor(jwtSecret.toByteArray(UTF_8))
+    @Value("\${app.jwtExpiration:86400}")
+    var jwtExpiration: Int = 86400
 
     fun generateJwtToken(username: String): String {
+
         return Jwts.builder()
             .setSubject(username)
             .setIssuedAt(Date())
-            .setExpiration(Date((Date()).time + jwtExpiration!! * 1000))
-            .signWith(SignatureAlgorithm.HS512, secretKeyFor(SignatureAlgorithm.HS512))
+            .setClaims(mapOf("USERNAME" to username))
+            .setExpiration(Date((Date()).time + jwtExpiration * 1000))
+            .signWith(key, HS512)
             .compact()
     }
 
     fun validateJwtToken(authToken: String): Boolean {
         try {
-            Jwts.parser().setSigningKey(secretKeyFor(SignatureAlgorithm.HS512)).build().parseClaimsJws(authToken)
+            Jwts.parser().setSigningKey(key).build().parseClaimsJws(authToken)
             return true
         } catch (e: SignatureException) {
             logger.error("Invalid JWT signature -> Message: {} ", e)
@@ -50,10 +58,17 @@ class JwtProvider(
     }
 
     fun getUserNameFromJwtToken(token: String): String {
-        return Jwts.parser()
-            .verifyWith(secretKeyFor(SignatureAlgorithm.HS512))
-            .build()
-            .parseClaimsJws(token)
-            .payload.subject
+        return Jwts.parser().setSigningKey(key).build().parseClaimsJws(token)
+            .getBody()["USERNAME"].toString()
+//        parser()
+//            .verifyWith(key)
+//            .build()
+//            .parseClaimsJws(token)
+//
+//        jwtUtil.getAllClaimsFromToken(authToken)
+//            .get("role", ArrayList::class.java)
+//            .map {
+//                Role.valueOf((it as Map<String, String>)["authority"])
+//            }
     }
 }

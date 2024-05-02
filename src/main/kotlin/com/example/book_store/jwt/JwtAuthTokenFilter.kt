@@ -6,21 +6,16 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
 
-
-class JwtAuthTokenFilter (
+class JwtAuthTokenFilter(
     val tokenProvider: JwtProvider,
-
-): OncePerRequestFilter() {
-    constructor() : this(JwtProvider())
-
-    lateinit var userDetailsService: UserDetailsService
+    val userDetailsService: UserDetailsService
+) : OncePerRequestFilter() {
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
@@ -39,14 +34,12 @@ class JwtAuthTokenFilter (
 
                 authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
                 SecurityContextHolder.getContext().authentication = authentication
-
             }
         } catch (ex: IllegalArgumentException) {
             logger.error("Invalid JWT token: {}", ex)
         } catch (ex: JwtException) {
             logger.error("JWT token validation failed: {}", ex)
         }
-
         filterChain.doFilter(request, response)
     }
 
@@ -59,7 +52,5 @@ class JwtAuthTokenFilter (
         } else null
     }
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(JwtAuthTokenFilter::class.java)
-    }
+
 }

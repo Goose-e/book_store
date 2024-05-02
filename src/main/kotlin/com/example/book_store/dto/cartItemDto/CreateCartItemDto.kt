@@ -7,29 +7,12 @@ import com.example.book_store.dto.ResponseDto
 import java.io.Serializable
 
 data class CreateCartItemRequestDto(
- val bookCode:String?
-): Serializable
+    val bookCode: String
+) : Serializable
 
 data class CreateCartItemDto(
-
-    val cartItemsId:Long?,
-
-    val bookId:Long?,
-
-    val cartId:Long?,
-
-    val cartItemsCode:String
-):ResponseDto
-
-data class BookDto(
-    val bookId:Long,
-
-):Serializable
-
-data class CartDto(
-    val cartId:Long,
-
-    ):Serializable
+    val cartItemsCode: String
+) : ResponseDto
 
 data class CreateCartItemResponse(
     private val httpRequestId: RequestId = EMPTY_STRING

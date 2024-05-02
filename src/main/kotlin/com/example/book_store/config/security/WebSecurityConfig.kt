@@ -2,6 +2,7 @@ package com.example.book_store.config.security
 
 import com.example.book_store.jwt.JwtAuthEntryPoint
 import com.example.book_store.jwt.JwtAuthTokenFilter
+import com.example.book_store.jwt.JwtProvider
 import com.example.book_store.models.enum.RoleEnum
 import com.example.book_store.service.UserDetailsService
 import org.springframework.context.annotation.Bean
@@ -22,16 +23,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurityConfig(
     private val userDetailsService: UserDetailsService,
-    private val unauthorizedHandler: JwtAuthEntryPoint
+    private val unauthorizedHandler: JwtAuthEntryPoint,
+    val tokenProvider: JwtProvider
 ) {
     @Bean
     fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
     }
-
     @Bean
     fun authenticationJwtTokenFilter(): JwtAuthTokenFilter {
-        return JwtAuthTokenFilter()
+        return JwtAuthTokenFilter(tokenProvider, userDetailsService)
     }
     @Bean
     @Throws(Exception::class)
@@ -47,6 +48,7 @@ class WebSecurityConfig(
                 authorize("/api/v1/auth/**", permitAll)
                 authorize("/api/v1/user-management/**", hasAuthority(RoleEnum.ADMIN.name))
                 authorize("/api/v1/users/**", authenticated)
+                authorize("/api/v1/cart/**", authenticated)
                 authorize("/api/v1/books/**", permitAll)
                 authorize("/api/v1/books/createOrUpdate",hasAuthority(RoleEnum.ADMIN.name))
                 authorize(anyRequest, denyAll)

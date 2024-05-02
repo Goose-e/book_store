@@ -4,7 +4,6 @@ import com.example.book_store.dto.HttpResponseBody
 import com.example.book_store.dto.cartItemDto.CreateCartItemDto
 import com.example.book_store.dto.cartItemDto.CreateCartItemRequestDto
 import com.example.book_store.service.CartItemService
-
 import org.springframework.web.bind.annotation.*
 
 @CrossOrigin(origins = ["*"], maxAge = 3600)
@@ -14,6 +13,8 @@ class CartItemController(
     private val cartItemService: CartItemService
 )
 {
+//    protected val logger: Log = LogFactory.getLog(this.javaClass)
+
     @PostMapping("/addToCart")
     fun addToCart(@RequestBody cartItem: CreateCartItemRequestDto):HttpResponseBody<CreateCartItemDto>{
         return cartItemService.addItemToCart(cartItem)
