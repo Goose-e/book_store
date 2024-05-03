@@ -5,9 +5,11 @@ import com.example.book_store.repo.CartItemRepository
 import org.springframework.stereotype.Component
 
 @Component
-class CartItemDao(private val cartRepo: CartItemRepository
+class CartItemDao(private val cartItemRepository: CartItemRepository
 ) {
-    fun findBookByBookCode(bookCode: String?) = cartRepo.findBookByBookCode(bookCode)
-    fun save(cartItem: CartItem) = cartRepo.save(cartItem)
-    fun findCartByUserName(login:String) = cartRepo.findCartIdByUserLogin(login)
+    fun findBookByBookCode(bookCode: String?) = cartItemRepository.findBookByBookCode(bookCode)
+    fun save(cartItem: CartItem) = cartItemRepository.save(cartItem)
+    fun findCartByUserName(login:String) = cartItemRepository.findCartIdByUserLogin(login)
+    fun findEntityByItemCode(Code:String) = cartItemRepository.findEntityByItemCode(Code)
+    fun findItemByItemCode(Code:String) = cartItemRepository.findItemByItemCode(Code)
 }

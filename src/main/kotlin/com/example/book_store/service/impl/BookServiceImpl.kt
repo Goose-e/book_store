@@ -1,5 +1,6 @@
 package com.example.book_store.service.impl
 
+import com.example.book_store.constant.SysConst.BIGDECIMAL_ZERO
 import com.example.book_store.constant.SysConst.EMPTY_STRING
 import com.example.book_store.constant.SysConst.INTEGER_ZERO
 import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
@@ -54,7 +55,7 @@ class BookServiceImpl(
                 bookPublisher = EMPTY_STRING,
                 bookDescription = EMPTY_STRING,
                 bookQuantity = INTEGER_ZERO,
-                bookPrice = EMPTY_STRING,//BIGDECIMAL_ZERO,
+                bookPrice = BIGDECIMAL_ZERO,
                 bookPages = INTEGER_ZERO,
                 genre = NO_GENRE,
                 bookCode = EMPTY_STRING,

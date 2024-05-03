@@ -5,6 +5,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.math.BigDecimal
 
 @Entity
 @Table(name = "books")
@@ -17,7 +18,7 @@ data class Book(
     @Column(name = "book_publisher")
     val bookPublisher: String,
     @Column(name = "book_price")
-    val bookPrice: String,
+    val bookPrice: BigDecimal,
     @Column(name = "book_description")
     val bookDescription: String,
     @Column(name = "book_pages")

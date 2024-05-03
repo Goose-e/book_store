@@ -1,14 +1,13 @@
 package com.example.book_store.service.impl
 
+import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
 import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
 import com.example.book_store.constant.SysConst.OC_BUGS
 import com.example.book_store.constant.SysConst.OC_OK
 import com.example.book_store.dao.CartItemDao
 import com.example.book_store.dao.CoreEntityDao
 import com.example.book_store.dto.HttpResponseBody
-import com.example.book_store.dto.cartItemDto.CreateCartItemDto
-import com.example.book_store.dto.cartItemDto.CreateCartItemRequestDto
-import com.example.book_store.dto.cartItemDto.CreateCartItemResponse
+import com.example.book_store.dto.cartItemDto.*
 import com.example.book_store.map.CartItemMapper
 import com.example.book_store.models.CartItem
 import com.example.book_store.models.CoreEntity
@@ -16,6 +15,7 @@ import com.example.book_store.models.enum.StatusEnum.CART_ITEM_ACTUAL
 import com.example.book_store.service.CartItemService
 import com.example.book_store.service.GenerationService
 import com.example.book_store.service.GenerationService.Companion.generateEntityId
+import org.dbs.validator.ErrorInfo
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -73,9 +73,26 @@ class CartItemServiceImpl(
         cartItemDao.save(item)
     }
 
-//    override fun delete(id: Long) {
-//       TODO("Not yet implemented")
-//    }
+    override fun delete(cartItemRequestDto: DeleteCartItemRequestDto): HttpResponseBody<DeleteCartItemDto> {
+        val response: HttpResponseBody<DeleteCartItemDto> = DeleteCartItemResponse()
+        cartItemRequestDto.cartItemCode?.let { cartItemCode ->
+            cartItemDao.findEntityByItemCode(cartItemCode)?.let { item ->
+                val delItem = cartItemMapper.delCartItemDto(cartItemDao.findItemByItemCode(cartItemCode))
+                coreEntityDao.save(cartItemMapper.deleteCartItem(item))
+                response.responseEntity = delItem
+                response.message = "Item Delete Successfully "
+            } ?: run {
+                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Item not found"))
+                response.message = "Item not found"
+            }
+
+        }?: run{
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Code is null"))
+            response.message = "Code is null"
+        }
+        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
+        return response
+    }
 
 
 }

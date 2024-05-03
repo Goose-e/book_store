@@ -3,7 +3,6 @@ package com.example.book_store.map
 import com.example.book_store.dto.bookDto.*
 import com.example.book_store.models.Book
 import com.example.book_store.models.CoreEntity
-import java.math.BigDecimal
 
 
 class BookMapper {
@@ -15,7 +14,7 @@ class BookMapper {
             bookPublisher = book.bookPublisher,
             bookDescription = book.bookDescription,
             bookQuantity = book.bookQuantity,
-            bookPrice = BigDecimal(book.bookPrice.toString()) ,
+            bookPrice = book.bookPrice,
             bookPages = book.bookPages,
             genre = book.genre,
             bookCode = book.bookCode

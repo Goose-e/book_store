@@ -10,7 +10,7 @@ enum class StatusEnum(
 
     BOOK_ACTUAL(0, "BOOK_CODE", "Book Actual"),
     USER_ACTUAL(1, "USER_ACTUAL", "User Actual"),
-    BOOK_UNAVAILABLE(2, "BOOK_UNAVAILABLE", "Book Unavailable"),
+    BOOK_CLOSED(2, "BOOK_CLOSED", "Book Closed"),
     USER_CLOSED(3, "USER_CLOSED", "User Closed"),
     CART_ITEM_ACTUAL(4, "ITEM_ACTUAL", "Item Actual"),
     CART_ITEM_CLOSED(5,"ITEM_CLOSED","Item Closed")

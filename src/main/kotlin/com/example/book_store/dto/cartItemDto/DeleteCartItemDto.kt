@@ -6,14 +6,14 @@ import com.example.book_store.dto.HttpResponseBody
 import com.example.book_store.dto.ResponseDto
 import java.io.Serializable
 
-data class CreateCartItemRequestDto(
-    val bookCode: String
+data class DeleteCartItemRequestDto(
+    val cartItemCode: String?
 ) : Serializable
 
-data class CreateCartItemDto(
-    val cartItemsCode: String,
+data class DeleteCartItemDto(
+    val itemCode: String,
 ) : ResponseDto
 
-data class CreateCartItemResponse(
+data class DeleteCartItemResponse(
     private val httpRequestId: RequestId = EMPTY_STRING
-) : HttpResponseBody<CreateCartItemDto>(httpRequestId)
+) : HttpResponseBody<DeleteCartItemDto>(httpRequestId)

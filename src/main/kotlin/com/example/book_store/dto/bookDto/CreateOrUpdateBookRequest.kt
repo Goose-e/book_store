@@ -13,7 +13,7 @@ data class CreateOrUpdateBookRequestDto(
 
     val bookPublisher:String,
 
-    val bookPrice: String,
+    val bookPrice: BigDecimal,
 
     val bookDescription:String,
 
