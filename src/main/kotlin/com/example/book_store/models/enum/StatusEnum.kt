@@ -7,17 +7,20 @@ enum class StatusEnum(
     private val statusCode: String,
     private val statusName: String
 ) {
-    // TODO: delete auto set id in db
+
     BOOK_ACTUAL(0, "BOOK_CODE", "Book Actual"),
     USER_ACTUAL(1, "USER_ACTUAL", "User Actual"),
     BOOK_UNAVAILABLE(2, "BOOK_UNAVAILABLE", "Book Unavailable"),
     USER_CLOSED(3, "USER_CLOSED", "User Closed"),
-    USER_ITEM(4, "ITEM_ACTUAL", "Item Actual"),
+    CART_ITEM_ACTUAL(4, "ITEM_ACTUAL", "Item Actual"),
+    CART_ITEM_CLOSED(5,"ITEM_CLOSED","Item Closed")
     ;
 
     companion object {
         fun getEnum(statusId: Int): StatusEnum =
             entries.find { it.getId() == statusId } ?: throw UnknownEnumException("privilegeId = $statusId")
+        fun getEnumByCode(statusCode: String): StatusEnum =
+            entries.find { it.getCode() == statusCode } ?: throw UnknownEnumException("privilegeId = $statusCode")
     }
 
     fun getId() = this.statusId

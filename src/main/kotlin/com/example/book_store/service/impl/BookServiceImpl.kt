@@ -1,6 +1,5 @@
 package com.example.book_store.service.impl
 
-import com.example.book_store.constant.SysConst.BIGDECIMAL_ZERO
 import com.example.book_store.constant.SysConst.EMPTY_STRING
 import com.example.book_store.constant.SysConst.INTEGER_ZERO
 import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
@@ -55,7 +54,7 @@ class BookServiceImpl(
                 bookPublisher = EMPTY_STRING,
                 bookDescription = EMPTY_STRING,
                 bookQuantity = INTEGER_ZERO,
-                bookPrice = BIGDECIMAL_ZERO,
+                bookPrice = EMPTY_STRING,//BIGDECIMAL_ZERO,
                 bookPages = INTEGER_ZERO,
                 genre = NO_GENRE,
                 bookCode = EMPTY_STRING,
@@ -76,16 +75,16 @@ class BookServiceImpl(
         bookDao.save(book)
     }
 
-    override fun bookOutOfStock(bookCode: DeleteBookRequestDto): HttpResponseBody<DeleteBookDto> {
-        val response: HttpResponseBody<DeleteBookDto> = DelBookResponse()
-        lateinit var deletedBook: DeleteBookDto
-        bookCode.bookCode?.let { code ->
+    override fun changeBookStatus(changeBookStatusRequestDto: ChangeBookStatusRequestDto): HttpResponseBody<ChangeBookStatusDto> {
+        val response: HttpResponseBody<ChangeBookStatusDto> = DelBookResponse()
+        lateinit var deletedBook: ChangeBookStatusDto
+        changeBookStatusRequestDto.bookCode?.let { code ->
             bookDao.findByCodeForDel(code)?.let { ent ->
-                coreEntityDao.save(BookMapper.mapDeleteEntToEnt(ent))
+                coreEntityDao.save(BookMapper.mapDeleteEntToEnt(ent,changeBookStatusRequestDto))
                 bookDao.findByCode(code)?.let {
                     deletedBook = BookMapper.mapBookToDelBookDTO(it, ent)
                     response.responseEntity = deletedBook
-                    response.message = "Book deleted"
+                    response.message = "Book Status Changed Successfully "
 
                 }
 

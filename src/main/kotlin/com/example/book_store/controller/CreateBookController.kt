@@ -1,6 +1,6 @@
 package com.example.book_store.controller
 
-import com.example.book_store.dto.*
+import com.example.book_store.dto.HttpResponseBody
 import com.example.book_store.dto.bookDto.*
 import com.example.book_store.service.BookService
 import jakarta.validation.Valid
@@ -18,14 +18,14 @@ class CreateBookController(
         bookService.addBook(bookRequestDto)
     }
 
-    @PostMapping("/deleteBook")
-    fun deleteBook(@Valid @RequestBody bookRequestDto: DeleteBookRequestDto): HttpResponseBody<DeleteBookDto> = run{
-        bookService.bookOutOfStock(bookRequestDto)
+    @PostMapping("/changeBookStatus")
+    fun deleteBook(@Valid @RequestBody bookRequestDto: ChangeBookStatusRequestDto): HttpResponseBody<ChangeBookStatusDto> = run{
+        bookService.changeBookStatus(bookRequestDto)
     }
 
     @GetMapping("/getByBookName/{bookName}")
-    fun getBookByBookName(@PathVariable(value = "bookName")BookRequestDto: GetBookRequestDto):HttpResponseBody<ListBookDto>  {
-       val bookFounded = bookService.getBook(BookRequestDto)
+    fun getBookByBookName(@PathVariable(value = "bookName")bookRequestDto: GetBookRequestDto):HttpResponseBody<ListBookDto>  {
+       val bookFounded = bookService.getBook(bookRequestDto)
 
         return bookFounded
     }

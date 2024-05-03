@@ -12,7 +12,7 @@ import com.example.book_store.dto.cartItemDto.CreateCartItemResponse
 import com.example.book_store.map.CartItemMapper
 import com.example.book_store.models.CartItem
 import com.example.book_store.models.CoreEntity
-import com.example.book_store.models.enum.StatusEnum.BOOK_ACTUAL
+import com.example.book_store.models.enum.StatusEnum.CART_ITEM_ACTUAL
 import com.example.book_store.service.CartItemService
 import com.example.book_store.service.GenerationService
 import com.example.book_store.service.GenerationService.Companion.generateEntityId
@@ -42,30 +42,26 @@ class CartItemServiceImpl(
                 val authentication: Authentication = SecurityContextHolder.getContext().authentication
                 val username = authentication.name
                 username?.let {
-                    val User =  cartItemDao.findUserByUserName(username)
-                    User?.userId.let {
-                        val cartId = cartItemDao.findCartByUserId(User?.userId)
-
-                        val coreEntity = CoreEntity(
-                            coreEntityId = generateEntityId(),
-                            createDate = now(),
-                            deleteDate = LOCALDATETIME_NULL,
-                            status = BOOK_ACTUAL
-                        )
-                        val item = CartItem(
-                            cartItemsId = coreEntity.coreEntityId,
-                            bookId = bookId,
-                            cartId = cartId,
-                            cartItemsCode = GenerationService.generateCode()
-                        )
-                        response.responseEntity = cartItemMapper.createCartItemDto(item)
-                        saveToDB(coreEntity, item)
-                        response.message = "Iteam added successfully"
-                    }
+                    val cartId = cartItemDao.findCartByUserName(username)
+                    val coreEntity = CoreEntity(
+                        coreEntityId = generateEntityId(),
+                        createDate = now(),
+                        deleteDate = LOCALDATETIME_NULL,
+                        status = CART_ITEM_ACTUAL
+                    )
+                    val item = CartItem(
+                        cartItemsId = coreEntity.coreEntityId,
+                        bookId = bookId,
+                        cartId = cartId,
+                        cartItemsCode = GenerationService.generateCode()
+                    )
+                    response.responseEntity = cartItemMapper.createCartItemDto(item)
+                    saveToDB(coreEntity, item)
+                    response.message = "Iteam added successfully"
                 }
             } ?: run {
-                    response.message = "Book not found"
-                }
+                response.message = "Book not found"
+            }
         }
         if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
         return response
@@ -77,9 +73,9 @@ class CartItemServiceImpl(
         cartItemDao.save(item)
     }
 
-    override fun delete(id: Long) {
-        TODO("Not yet implemented")
-    }
+//    override fun delete(id: Long) {
+//       TODO("Not yet implemented")
+//    }
 
 
 }

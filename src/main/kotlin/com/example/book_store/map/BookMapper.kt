@@ -3,7 +3,7 @@ package com.example.book_store.map
 import com.example.book_store.dto.bookDto.*
 import com.example.book_store.models.Book
 import com.example.book_store.models.CoreEntity
-import com.example.book_store.models.enum.StatusEnum
+import java.math.BigDecimal
 
 
 class BookMapper {
@@ -15,12 +15,12 @@ class BookMapper {
             bookPublisher = book.bookPublisher,
             bookDescription = book.bookDescription,
             bookQuantity = book.bookQuantity,
-            bookPrice = book.bookPrice,
+            bookPrice = BigDecimal(book.bookPrice.toString()) ,
             bookPages = book.bookPages,
             genre = book.genre,
             bookCode = book.bookCode
         )
-        fun mapBookToDelBookDTO(book: Book, ent :CoreEntity): DeleteBookDto = DeleteBookDto(
+        fun mapBookToDelBookDTO(book: Book, ent :CoreEntity): ChangeBookStatusDto = ChangeBookStatusDto(
             bookName = book.bookName,
             bookCode = book.bookCode,
             bookStatusEnum = ent.status
@@ -49,9 +49,9 @@ class BookMapper {
                 bookStatusEnum = book.bookStatusEnum,
                 )
 
-        fun mapDeleteEntToEnt(core: CoreEntity): CoreEntity =
+        fun mapDeleteEntToEnt(core: CoreEntity,newStatus:ChangeBookStatusRequestDto): CoreEntity =
             core.copy(
-                status = StatusEnum.BOOK_UNAVAILABLE
+                status = newStatus.bookStatusEnum
             )
     }
 
