@@ -53,6 +53,7 @@ class CartItemServiceImpl(
                         cartItemsId = coreEntity.coreEntityId,
                         bookId = bookId,
                         cartId = cartId,
+                        cartItemQuantity = 1,
                         cartItemsCode = GenerationService.generateCode()
                     )
                     response.responseEntity = cartItemMapper.createCartItemDto(item)
@@ -86,7 +87,33 @@ class CartItemServiceImpl(
                 response.message = "Item not found"
             }
 
-        }?: run{
+        } ?: run {
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Code is null"))
+            response.message = "Code is null"
+        }
+        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
+        return response
+    }
+
+    override fun changeQuantity(changeCartItemQuantityRequestDto: ChangeCartItemQuantityRequestDto): HttpResponseBody<ChangeCartItemQuantityDto> {
+        val response: HttpResponseBody<ChangeCartItemQuantityDto> = ChangeCartItemQuantityResponse()
+        changeCartItemQuantityRequestDto.cartItemCode?.let { itemCode ->
+            if (changeCartItemQuantityRequestDto.quantity < 0) {
+                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Quantity < 0"))
+                response.message = "Quantity is negative"
+            } else {
+                cartItemDao.findItemByItemCode(itemCode)?.let { item ->
+                    val changeItem = cartItemMapper.changeItemQuantity(item, changeCartItemQuantityRequestDto.quantity)
+                    cartItemDao.save(changeItem)
+                    response.responseEntity = cartItemMapper.changeItemQuantityDto(changeItem)
+                    response.message = "Quantity changed"
+                }
+            }
+                ?: run {
+                    response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Item not found"))
+                    response.message = "Item not found"
+                }
+        } ?: run {
             response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Code is null"))
             response.message = "Code is null"
         }

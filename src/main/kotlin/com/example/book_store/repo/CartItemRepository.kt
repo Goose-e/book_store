@@ -17,5 +17,5 @@ interface CartItemRepository : CrudRepository<CartItem, Int> {
     fun findEntityByItemCode(@Param("code") bookCode: String): CoreEntity?
 
     @Query("SELECT c from CartItem c where c.cartItemsCode = :code")
-    fun findItemByItemCode(@Param("code") code: String): CartItem
+    fun findItemByItemCode(@Param("code") code: String): CartItem?
 }

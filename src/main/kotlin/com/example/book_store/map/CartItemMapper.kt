@@ -1,5 +1,6 @@
 package com.example.book_store.map
 
+import com.example.book_store.dto.cartItemDto.ChangeCartItemQuantityDto
 import com.example.book_store.dto.cartItemDto.CreateCartItemDto
 import com.example.book_store.dto.cartItemDto.DeleteCartItemDto
 import com.example.book_store.models.CartItem
@@ -14,11 +15,24 @@ class CartItemMapper {
         CreateCartItemDto(
             cartItemsCode = item.cartItemsCode,
         )
-    fun deleteCartItem(ent:CoreEntity): CoreEntity = ent.copy(
+
+    fun deleteCartItem(ent: CoreEntity): CoreEntity = ent.copy(
         status = StatusEnum.CART_ITEM_CLOSED
     )
-    fun delCartItemDto(item: CartItem): DeleteCartItemDto =
-        DeleteCartItemDto(
-            itemCode = item.cartItemsCode,
-        )
+
+    fun changeItemQuantity(item: CartItem, quantity: Int): CartItem = item.copy(
+        cartItemQuantity = quantity
+    )
+
+    fun changeItemQuantityDto(item: CartItem): ChangeCartItemQuantityDto = ChangeCartItemQuantityDto(
+        itemCode = item.cartItemsCode,
+        quantity = item.cartItemQuantity
+    )
+
+    fun delCartItemDto(item: CartItem?): DeleteCartItemDto? =
+        item?.let {
+            DeleteCartItemDto(
+                itemCode = it.cartItemsCode,
+            )
+        }
 }

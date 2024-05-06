@@ -14,6 +14,8 @@ data class CartItem(
     val bookId:Long?,
     @Column(name = "cart_id")
     val cartId:Long?,
+    @Column(name = "cart_item_quantity")
+    val cartItemQuantity:Int?,
     @Column(name = "cart_item_code")
     val cartItemsCode:String
 )
