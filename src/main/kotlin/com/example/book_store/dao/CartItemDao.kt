@@ -12,4 +12,5 @@ class CartItemDao(private val cartItemRepository: CartItemRepository
     fun findCartByUserName(login:String) = cartItemRepository.findCartIdByUserLogin(login)
     fun findEntityByItemCode(Code:String) = cartItemRepository.findEntityByItemCode(Code)
     fun findItemByItemCode(Code:String) = cartItemRepository.findItemByItemCode(Code)
+    fun findAllItems(cartId:Long?) = cartItemRepository.getAllItems(cartId)
 }

@@ -1,8 +1,6 @@
 package com.example.book_store.map
 
-import com.example.book_store.dto.cartItemDto.ChangeCartItemQuantityDto
-import com.example.book_store.dto.cartItemDto.CreateCartItemDto
-import com.example.book_store.dto.cartItemDto.DeleteCartItemDto
+import com.example.book_store.dto.cartItemDto.*
 import com.example.book_store.models.CartItem
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.enum.StatusEnum
@@ -35,4 +33,14 @@ class CartItemMapper {
                 itemCode = it.cartItemsCode,
             )
         }
+
+    fun mapBookFromListToBookDTO(book: GetItemListDtoDB): GetItemListDto =
+        GetItemListDto(
+            bookName = book.bookName,
+            bookGenre = book.bookGenre,
+            bookCode = book.bookCode,
+            itemQuantity = book.itemQuantity,
+            itemCode = book.itemCode,
+            bookPrice = book.bookPrice,
+        )
 }

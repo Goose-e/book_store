@@ -33,6 +33,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDateTime.now
 
 
@@ -100,7 +101,8 @@ class UserServiceImpl (val authenticationManager: AuthenticationManager,
             val cart = Cart(
                 cartId = coreEntityCart.coreEntityId,
                 userId = user.userId,
-                cartCode = GenerationService.generateCode()
+                cartCode = GenerationService.generateCode(),
+                cartPrice = BigDecimal.ZERO
             )
             saveInDB(coreEntity, user,coreEntityCart,cart)
             response.responseEntity = Mapper.mapUserToUserDTO(user)

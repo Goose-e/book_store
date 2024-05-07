@@ -1,5 +1,6 @@
 package com.example.book_store.repo
 
+import com.example.book_store.dto.cartItemDto.GetItemListDtoDB
 import com.example.book_store.models.CartItem
 import com.example.book_store.models.CoreEntity
 import org.springframework.data.jpa.repository.Query
@@ -18,4 +19,7 @@ interface CartItemRepository : CrudRepository<CartItem, Int> {
 
     @Query("SELECT c from CartItem c where c.cartItemsCode = :code")
     fun findItemByItemCode(@Param("code") code: String): CartItem?
+
+    @Query("select new com.example.book_store.dto.cartItemDto.GetItemListDtoDB(b.bookName, b.genre, b.bookCode, b.bookPrice, c.cartItemsCode, c.cartItemQuantity) from CartItem c join Book b on( b.bookId = c.bookId) join Cart car on (car.cartId = c.cartId) right join CoreEntity ent on (ent.coreEntityId = c.cartItemsId and ent.status != 5) where c.cartId = :id")
+    fun getAllItems(@Param("id") id:Long?): MutableCollection<GetItemListDtoDB>
 }

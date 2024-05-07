@@ -14,25 +14,24 @@ class CreateBookController(
     private val bookService: BookService
 ) {
     @PostMapping("/createOrUpdate")
-    fun createOrUpdateBook(@Valid @RequestBody bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> = run{
-        bookService.addBook(bookRequestDto)
-    }
+    fun createOrUpdateBook(@Valid @RequestBody bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> =
+        run {
+            bookService.addBook(bookRequestDto)
+        }
 
     @PostMapping("/changeBookStatus")
-    fun deleteBook(@Valid @RequestBody bookRequestDto: ChangeBookStatusRequestDto): HttpResponseBody<ChangeBookStatusDto> = run{
-        bookService.changeBookStatus(bookRequestDto)
-    }
+    fun deleteBook(@Valid @RequestBody bookRequestDto: ChangeBookStatusRequestDto): HttpResponseBody<ChangeBookStatusDto> =
+        run {
+            bookService.changeBookStatus(bookRequestDto)
+        }
 
     @GetMapping("/getByBookName/{bookName}")
-    fun getBookByBookName(@PathVariable(value = "bookName")bookRequestDto: GetBookRequestDto):HttpResponseBody<ListBookDto>  {
-       val bookFounded = bookService.getBook(bookRequestDto)
-
-        return bookFounded
+    fun getBookByBookName(@PathVariable(value = "bookName") bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto> {
+        return bookService.getBook(bookRequestDto)
     }
 
     @GetMapping("/getAllBooks/books")
-    fun getAllBook():HttpResponseBody<ListBookDto>  {
-        val bookFounded = bookService.getAllBooks()
-        return bookFounded
+    fun getAllBook(): HttpResponseBody<ListBookDto> {
+        return bookService.getAllBooks()
     }
 }

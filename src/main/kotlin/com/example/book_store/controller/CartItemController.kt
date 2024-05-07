@@ -26,4 +26,8 @@ class CartItemController(
     fun changeItemQuantity(@RequestBody cartItem: ChangeCartItemQuantityRequestDto): HttpResponseBody<ChangeCartItemQuantityDto> {
         return cartItemService.changeQuantity(cartItem)
     }
+    @GetMapping("/getItemList")
+    fun getItemList():HttpResponseBody<ListCartItemDto>{
+     return  cartItemService.getAll()
+    }
 }

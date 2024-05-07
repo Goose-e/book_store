@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDateTime.now
 
 
@@ -29,8 +30,34 @@ class CartItemServiceImpl(
     val coreEntityDao: CoreEntityDao,
     val cartItemMapper: CartItemMapper
 ) : CartItemService {
-    override fun getAll(): List<CartItem> {
-        TODO("Not yet implemented")
+    override fun getAll(): HttpResponseBody<ListCartItemDto> {
+
+        val response: HttpResponseBody<ListCartItemDto> = GetItemListResponse()
+        var price: BigDecimal = BigDecimal.ZERO
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+        val username = authentication.name
+        username?.let {
+            val cartId = cartItemDao.findCartByUserName(username)
+            val getBook: MutableCollection<GetItemListDtoDB> = cartItemDao.findAllItems(cartId)
+            if (getBook.isNotEmpty()) {
+                val listBookDto = getBook.map {
+                    price += it.bookPrice
+                    cartItemMapper.mapBookFromListToBookDTO(it)
+                }
+                response.responseEntity = ListCartItemDto(listBookDto = listBookDto,price = price)
+                response.message = "Books"
+            } else {
+                response.message = "Cart is empty"
+                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Cart is empty"))
+            }
+
+            if (response.errors.isNotEmpty()) {
+                response.responseCode = OC_BUGS
+            } else {
+                response.responseCode = OC_OK
+            }
+        }
+        return response
     }
 
     override fun addItemToCart(cartItem: CreateCartItemRequestDto): HttpResponseBody<CreateCartItemDto> {
