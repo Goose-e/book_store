@@ -4,6 +4,7 @@ import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
 import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
 import com.example.book_store.constant.SysConst.OC_BUGS
 import com.example.book_store.constant.SysConst.OC_OK
+import com.example.book_store.dao.CartDao
 import com.example.book_store.dao.CartItemDao
 import com.example.book_store.dao.CoreEntityDao
 import com.example.book_store.dto.HttpResponseBody
@@ -28,10 +29,10 @@ import java.time.LocalDateTime.now
 class CartItemServiceImpl(
     val cartItemDao: CartItemDao,
     val coreEntityDao: CoreEntityDao,
-    val cartItemMapper: CartItemMapper
+    val cartItemMapper: CartItemMapper,
+    val cartDao: CartDao
 ) : CartItemService {
     override fun getAll(): HttpResponseBody<ListCartItemDto> {
-
         val response: HttpResponseBody<ListCartItemDto> = GetItemListResponse()
         var price: BigDecimal = BigDecimal.ZERO
         val authentication: Authentication = SecurityContextHolder.getContext().authentication
@@ -44,7 +45,10 @@ class CartItemServiceImpl(
                     price += it.bookPrice
                     cartItemMapper.mapBookFromListToBookDTO(it)
                 }
-                response.responseEntity = ListCartItemDto(listBookDto = listBookDto,price = price)
+
+                val cart = cartItemMapper.cartPrice(price, cartItemDao.findCartById(cartId))
+                cartDao.save(cart)
+                response.responseEntity = ListCartItemDto(listBookDto = listBookDto, price = price)
                 response.message = "Books"
             } else {
                 response.message = "Cart is empty"

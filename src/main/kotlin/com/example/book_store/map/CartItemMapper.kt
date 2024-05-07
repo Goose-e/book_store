@@ -1,10 +1,12 @@
 package com.example.book_store.map
 
 import com.example.book_store.dto.cartItemDto.*
+import com.example.book_store.models.Cart
 import com.example.book_store.models.CartItem
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.enum.StatusEnum
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
 
 @Component
 class CartItemMapper {
@@ -33,6 +35,9 @@ class CartItemMapper {
                 itemCode = it.cartItemsCode,
             )
         }
+
+
+    fun cartPrice(price:BigDecimal,cart:Cart):Cart  = cart.copy(cartPrice = price)
 
     fun mapBookFromListToBookDTO(book: GetItemListDtoDB): GetItemListDto =
         GetItemListDto(
