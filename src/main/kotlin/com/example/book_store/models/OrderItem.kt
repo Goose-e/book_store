@@ -11,17 +11,16 @@ import java.math.BigDecimal
 data class OrderItem(
     @Id
     @Column(name = "order_item_id")
-    val orderItemId:Long,
+    val orderItemId:Long?,
     @Column(name = "book_id")
-    val bookId:Long,
+    val bookId:Long?,
     @Column(name = "order_id")
-    val orderId:Long,
+    val orderId:Long?,
     @Column(name = "order_item_code")
     val orderItemCode:String,
     @Column(name = "order_item_price")
     val orderItemPrice:BigDecimal,
     @Column(name = "order_item_amount")
-    val orderItemAmount:Int,
-    @Column(name = "order_item_total_price")
-    val orderItemTotalPrice:BigDecimal
+    val orderItemAmount:Int?,
+
 )

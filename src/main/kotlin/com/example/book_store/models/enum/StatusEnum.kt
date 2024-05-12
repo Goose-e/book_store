@@ -13,7 +13,11 @@ enum class StatusEnum(
     BOOK_CLOSED(2, "BOOK_CLOSED", "Book Closed"),
     USER_CLOSED(3, "USER_CLOSED", "User Closed"),
     CART_ITEM_ACTUAL(4, "ITEM_ACTUAL", "Item Actual"),
-    CART_ITEM_CLOSED(5,"ITEM_CLOSED","Item Closed")
+    CART_ITEM_CLOSED(5,"ITEM_CLOSED","Item Closed"),
+    ORDER_ACTUAL(6, "ORDER_ACTUAL", "Order Actual"),
+    ORDER_CLOSED(7, "ORDER_CLOSED", "Order Closed"),
+    ORDER_ITEM_ACTUAL(8, "ORDER_ITEM_ACTUAL", "Order Item Actual"),
+    ORDER_ITEM_CLOSED(9, "ORDER_ITEM_CLOSED", "Order Item Closed"),
     ;
 
     companion object {

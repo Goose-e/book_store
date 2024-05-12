@@ -12,8 +12,7 @@ import java.time.LocalDateTime
 data class Order(
     @Id
     @Column(name = "order_id")
-
-    val orderId: Long,
+    val orderId: Long?,
     @Column(name = "user_id")
     val userId: Long,
     @Column(name = "address")
@@ -23,5 +22,5 @@ data class Order(
     @Column(name = "order_date")
     val orderDate: LocalDateTime,
     @Column(name = "order_code")
-    val orderCode: String
+    val orderCode: String,
 )

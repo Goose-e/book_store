@@ -49,6 +49,7 @@ class WebSecurityConfig(
                 authorize("/api/v1/user-management/**", hasAuthority(RoleEnum.ADMIN.name))
                 authorize("/api/v1/users/**", authenticated)
                 authorize("/api/v1/cart/**", authenticated)
+                authorize("/api/v1/order/**", authenticated)
                 authorize("/api/v1/books/**", permitAll)
                 authorize("/api/v1/books/createOrUpdate",hasAuthority(RoleEnum.ADMIN.name))
                 authorize(anyRequest, denyAll)
