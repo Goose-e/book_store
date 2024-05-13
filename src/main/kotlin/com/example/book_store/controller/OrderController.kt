@@ -1,8 +1,8 @@
 package com.example.book_store.controller
 
 import com.example.book_store.dto.HttpResponseBody
-import com.example.book_store.dto.cartItemDto.CreateOrderDto
 import com.example.book_store.dto.cartItemDto.CreateOrderRequestDto
+import com.example.book_store.dto.orderDto.CreateOrderItemList
 import com.example.book_store.service.OrderService
 import org.springframework.web.bind.annotation.*
 
@@ -16,7 +16,7 @@ class OrderController(
 //    protected val logger: Log = LogFactory.getLog(this.javaClass)
 
     @PostMapping("/addOrder")
-    fun addToCart(@RequestBody orderDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderDto> {
+    fun addToCart(@RequestBody orderDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderItemList> {
         return orderService.createOrder(orderDto)
     }
 }

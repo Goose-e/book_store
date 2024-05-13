@@ -6,10 +6,10 @@ import com.example.book_store.constant.SysConst.OC_OK
 import com.example.book_store.dao.CoreEntityDao
 import com.example.book_store.dao.OrderDao
 import com.example.book_store.dto.HttpResponseBody
-import com.example.book_store.dto.cartItemDto.CreateOrderDto
 import com.example.book_store.dto.cartItemDto.CreateOrderRequestDto
-import com.example.book_store.dto.cartItemDto.CreateOrderResponse
+import com.example.book_store.dto.orderDto.CreateOrderItemList
 import com.example.book_store.dto.orderDto.CreateOrderItemRequestDto
+import com.example.book_store.dto.orderDto.CreateOrderItemResponse
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.Order
 import com.example.book_store.models.enum.StatusEnum.ORDER_ACTUAL
@@ -30,8 +30,8 @@ class OrderServiceImpl(
     val orderItemService: OrderItemService
 ) : OrderService {
 
-    override fun createOrder(createOrderRequestDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderDto> {
-        val response: HttpResponseBody<CreateOrderDto> = CreateOrderResponse()
+    override fun createOrder(createOrderRequestDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderItemList> {
+        val response: HttpResponseBody<CreateOrderItemList> = CreateOrderItemResponse()
         createOrderRequestDto.address?.let {
             val authentication: Authentication = SecurityContextHolder.getContext().authentication
             val username = authentication.name
@@ -55,12 +55,15 @@ class OrderServiceImpl(
                     )
 
                     saveInDB(coreEntity, order)
-                    orderItemService.createOrderItem(
+                    response.responseEntity = orderItemService.createOrderItem(
                         CreateOrderItemRequestDto(
                             orderId = order.orderId,
                             login = username
                         )
                     )
+                    response.responseEntity?.let {
+                        response.message = "Cart is empty"
+                    }
                     response.message = "Order created successfully"
                 } ?: run {
                     response.message = "User not authorized to order ${createOrderRequestDto.address}"
