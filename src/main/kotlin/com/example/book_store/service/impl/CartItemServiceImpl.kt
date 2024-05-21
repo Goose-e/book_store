@@ -1,7 +1,6 @@
 package com.example.book_store.service.impl
 
 import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
-import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
 import com.example.book_store.constant.SysConst.OC_BUGS
 import com.example.book_store.constant.SysConst.OC_OK
 import com.example.book_store.dao.CartDao
@@ -14,15 +13,14 @@ import com.example.book_store.models.CartItem
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.enum.StatusEnum.CART_ITEM_ACTUAL
 import com.example.book_store.service.CartItemService
+import com.example.book_store.service.CoreEntityService
 import com.example.book_store.service.GenerationService
-import com.example.book_store.service.GenerationService.Companion.generateEntityId
 import org.dbs.validator.ErrorInfo
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
-import java.time.LocalDateTime.now
 
 
 @Service
@@ -30,7 +28,8 @@ class CartItemServiceImpl(
     val cartItemDao: CartItemDao,
     val coreEntityDao: CoreEntityDao,
     val cartItemMapper: CartItemMapper,
-    val cartDao: CartDao
+    val cartDao: CartDao,
+    val coreEntityService: CoreEntityService
 ) : CartItemService {
     override fun getAll(): HttpResponseBody<ListCartItemDto> {
         val response: HttpResponseBody<ListCartItemDto> = GetItemListResponse()
@@ -74,12 +73,7 @@ class CartItemServiceImpl(
                 val username = authentication.name
                 username?.let {
                     val cartId = cartItemDao.findCartByUserName(username)
-                    val coreEntity = CoreEntity(
-                        coreEntityId = generateEntityId(),
-                        createDate = now(),
-                        deleteDate = LOCALDATETIME_NULL,
-                        status = CART_ITEM_ACTUAL
-                    )
+                    val coreEntity = coreEntityService.createCoreEntity(CART_ITEM_ACTUAL)
                     val item = CartItem(
                         cartItemsId = coreEntity.coreEntityId,
                         bookId = bookId,

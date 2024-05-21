@@ -1,7 +1,6 @@
 package com.example.book_store.service.impl
 
 import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
-import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
 import com.example.book_store.constant.SysConst.OC_BUGS
 import com.example.book_store.constant.SysConst.OC_OK
 import com.example.book_store.dao.CartDao
@@ -15,12 +14,13 @@ import com.example.book_store.models.Cart
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.User
 import com.example.book_store.models.enum.RoleEnum.USER
+import com.example.book_store.models.enum.StatusEnum.CART_ACTUAL
 import com.example.book_store.models.enum.StatusEnum.USER_ACTUAL
 import com.example.book_store.repo.UserRepository
 import com.example.book_store.response.JwtResponse
 import com.example.book_store.response.ResponseMessage
+import com.example.book_store.service.CoreEntityService
 import com.example.book_store.service.GenerationService
-import com.example.book_store.service.GenerationService.Companion.generateEntityId
 import com.example.book_store.service.IUserService
 import org.dbs.validator.ErrorInfo
 import org.springframework.http.HttpStatus.BAD_REQUEST
@@ -34,7 +34,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
-import java.time.LocalDateTime.now
 
 
 @Service
@@ -45,7 +44,8 @@ class UserServiceImpl(
     val jwtProvider: JwtProvider,
     val coreEntityDao: CoreEntityDao,
     val userDao: UserDao,
-    val cartDao: CartDao
+    val cartDao: CartDao,
+    val coreEntityService: CoreEntityService
 ) : IUserService {
     override fun authenticateUser(loginRequest: LoginUserDto): ResponseEntity<*> {
 
@@ -79,12 +79,7 @@ class UserServiceImpl(
             response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "User already exist"))
         } ?: run {
 
-            val coreEntity = CoreEntity(
-                coreEntityId = generateEntityId(),
-                createDate = now(),
-                deleteDate = LOCALDATETIME_NULL,
-                status = USER_ACTUAL
-            )
+            val coreEntity = coreEntityService.createCoreEntity(USER_ACTUAL)
 
             val user = User(
                 userId = coreEntity.coreEntityId,
@@ -94,12 +89,7 @@ class UserServiceImpl(
                 userRole = USER
 
             )
-            val coreEntityCart = CoreEntity(
-                coreEntityId = generateEntityId(),
-                createDate = now(),
-                deleteDate = LOCALDATETIME_NULL,
-                status = USER_ACTUAL
-            )
+            val coreEntityCart = coreEntityService.createCoreEntity(CART_ACTUAL)
             val cart = Cart(
                 cartId = coreEntityCart.coreEntityId,
                 userId = user.userId,

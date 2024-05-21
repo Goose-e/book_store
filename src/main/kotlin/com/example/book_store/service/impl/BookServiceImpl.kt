@@ -4,7 +4,6 @@ import com.example.book_store.constant.SysConst.BIGDECIMAL_ZERO
 import com.example.book_store.constant.SysConst.EMPTY_STRING
 import com.example.book_store.constant.SysConst.INTEGER_ZERO
 import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
-import com.example.book_store.constant.SysConst.LOCALDATETIME_NULL
 import com.example.book_store.constant.SysConst.OC_BUGS
 import com.example.book_store.constant.SysConst.OC_OK
 import com.example.book_store.dao.BookDao
@@ -17,17 +16,17 @@ import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.enum.GenreEnum.NO_GENRE
 import com.example.book_store.models.enum.StatusEnum
 import com.example.book_store.service.BookService
+import com.example.book_store.service.CoreEntityService
 import com.example.book_store.service.GenerationService
-import com.example.book_store.service.GenerationService.Companion.generateEntityId
 import org.dbs.validator.ErrorInfo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime.now
 
 @Service
 class BookServiceImpl(
     val bookDao: BookDao,
-    val coreEntityDao: CoreEntityDao
+    val coreEntityDao: CoreEntityDao,
+    val coreEntityService: CoreEntityService
 ) : BookService {
 
     override fun addBook(bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> {
@@ -42,12 +41,7 @@ class BookServiceImpl(
             }
         } ?: run {
 
-            val coreEntity = CoreEntity(
-                coreEntityId = generateEntityId(),
-                createDate = now(),
-                deleteDate = LOCALDATETIME_NULL,
-                status = StatusEnum.BOOK_ACTUAL
-            )
+            val coreEntity =  coreEntityService.createCoreEntity(StatusEnum.BOOK_ACTUAL)
 
             val book = Book(
                 bookId = coreEntity.coreEntityId,

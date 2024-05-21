@@ -9,7 +9,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class CreateOrderRequestDto(
-    val address: String?,
+    val address: String,
 ) : Serializable
 
 data class CreateOrderDto(

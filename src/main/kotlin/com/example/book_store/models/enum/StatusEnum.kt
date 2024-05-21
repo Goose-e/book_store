@@ -18,6 +18,8 @@ enum class StatusEnum(
     ORDER_CLOSED(7, "ORDER_CLOSED", "Order Closed"),
     ORDER_ITEM_ACTUAL(8, "ORDER_ITEM_ACTUAL", "Order Item Actual"),
     ORDER_ITEM_CLOSED(9, "ORDER_ITEM_CLOSED", "Order Item Closed"),
+    CART_ACTUAL(10, "CART_ACTUAL", "Cart Actual"),
+    CART_CLOSED(11, "CART_CLOSED", "Cart Closed"),
     ;
 
     companion object {

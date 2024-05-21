@@ -5,5 +5,5 @@ import com.example.book_store.dto.cartItemDto.CreateOrderRequestDto
 import com.example.book_store.dto.orderDto.CreateOrderItemList
 
 interface OrderService {
-    fun createOrder(createOrderRequestDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderItemList>
+    fun createOrUpdateOrder(createOrderRequestDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderItemList>
 }

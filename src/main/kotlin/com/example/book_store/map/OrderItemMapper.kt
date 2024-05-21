@@ -26,7 +26,8 @@ class OrderItemMapper {
             bookQuantity = cartItem.orderItemAmount
 
         )
-    fun mapOrderItemDtoToOrderItem(item:GetCartItemDB, coreEntity: CoreEntity, orderId: Long?):OrderItem = OrderItem(
+
+    fun mapOrderItemDtoToOrderItem(item: GetCartItemDB, coreEntity: CoreEntity, orderId: Long?): OrderItem = OrderItem(
         orderItemId = coreEntity.coreEntityId,
         orderId = orderId,
         bookId = item.bookId,
@@ -34,5 +35,5 @@ class OrderItemMapper {
         orderItemPrice = item.orderItemPrice,
         orderItemAmount = item.orderItemAmount,
 
-    )
+        )
 }

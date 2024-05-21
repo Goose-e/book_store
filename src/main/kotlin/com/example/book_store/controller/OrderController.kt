@@ -16,6 +16,6 @@ class OrderController(
 
     @PostMapping("/addOrder")
     fun addToCart(@RequestBody orderDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderItemList> {
-        return orderService.createOrder(orderDto)
+        return orderService.createOrUpdateOrder(orderDto)
     }
 }
