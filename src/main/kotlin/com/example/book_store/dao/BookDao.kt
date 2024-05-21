@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 class BookDao(private val bookRepo: BookRepository) {
 
     fun findByCode(bookCode: String?): Book? = bookRepo.findByCode(bookCode)
-    fun findAllBooks(): MutableCollection<GetBookDtoDB> =bookRepo.findAllBooks()
+    fun findAllBooks(): MutableCollection<GetBookDtoDB> = bookRepo.findAllBooks()
     fun save(book: Book): Book = bookRepo.save(book)
     fun findByCodeForDel(bookCode: String?): CoreEntity? = bookRepo.findByCodeForDel(bookCode)
     fun findByName(book: String): MutableCollection<GetBookDtoDB> = bookRepo.findByBookName(book)

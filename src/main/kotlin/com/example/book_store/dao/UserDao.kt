@@ -7,10 +7,11 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class UserDao(private val userRepo:UserRepository
-    ): CrudRepository<User, Long> {
+class UserDao(
+    private val userRepo: UserRepository
+) : CrudRepository<User, Long> {
     override fun <S : User?> save(entity: S & Any): S & Any {
-       return userRepo.save(entity)
+        return userRepo.save(entity)
     }
 
     override fun <S : User?> saveAll(entities: MutableIterable<S>): MutableIterable<S> {

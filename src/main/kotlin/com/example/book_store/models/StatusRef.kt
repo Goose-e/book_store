@@ -10,10 +10,10 @@ import jakarta.persistence.Table
 @Table(name = "statuses_ref")
 data class StatusRef(
     @Id
-    @Column(name ="status_id")
+    @Column(name = "status_id")
     val statusId: StatusEnum,
     @Column(name = "status_code")
-    val statusCode:String,
-    @Column(name ="status_name")
-    val statusName:String
+    val statusCode: String,
+    @Column(name = "status_name")
+    val statusName: String
 )

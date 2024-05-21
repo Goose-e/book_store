@@ -12,8 +12,8 @@ class OrderItemDao(
     private val cartItemRepository: CartItemRepository,
     private val bookRepository: BookRepository
 ) {
-    fun findCartByUserName(login:String) = cartItemRepository.findCartIdByUserLogin(login)
-    fun findAllItems(cartId:Long?) = orderItemRepo.getAllItems(cartId)
+    fun findCartByUserName(login: String) = cartItemRepository.findCartIdByUserLogin(login)
+    fun findAllItems(cartId: Long?) = orderItemRepo.getAllItems(cartId)
     fun save(orderItem: OrderItem): OrderItem = orderItemRepo.save(orderItem)
-    fun findBookNameByBookId(bookId:Long) = bookRepository.findBookNameById(bookId)
+    fun findBookNameByBookId(bookId: Long) = bookRepository.findBookNameById(bookId)
 }

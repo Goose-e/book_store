@@ -10,24 +10,26 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/cart")
 class CartItemController(
     private val cartItemService: CartItemService
-)
-{
+) {
 //    protected val logger: Log = LogFactory.getLog(this.javaClass)
 
     @PostMapping("/addToCart")
-    fun addToCart(@RequestBody cartItem: CreateCartItemRequestDto):HttpResponseBody<CreateCartItemDto>{
+    fun addToCart(@RequestBody cartItem: CreateCartItemRequestDto): HttpResponseBody<CreateCartItemDto> {
         return cartItemService.addItemToCart(cartItem)
     }
+
     @PostMapping("/delFromCart")
-    fun delFromCart(@RequestBody cartItem: DeleteCartItemRequestDto):HttpResponseBody<DeleteCartItemDto>{
+    fun delFromCart(@RequestBody cartItem: DeleteCartItemRequestDto): HttpResponseBody<DeleteCartItemDto> {
         return cartItemService.delete(cartItem)
     }
+
     @PostMapping("/changeQuantity")
     fun changeItemQuantity(@RequestBody cartItem: ChangeCartItemQuantityRequestDto): HttpResponseBody<ChangeCartItemQuantityDto> {
         return cartItemService.changeQuantity(cartItem)
     }
+
     @GetMapping("/getItemList")
-    fun getItemList():HttpResponseBody<ListCartItemDto>{
-     return  cartItemService.getAll()
+    fun getItemList(): HttpResponseBody<ListCartItemDto> {
+        return cartItemService.getAll()
     }
 }

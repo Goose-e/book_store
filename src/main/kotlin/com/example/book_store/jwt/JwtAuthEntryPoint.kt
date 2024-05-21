@@ -12,14 +12,12 @@ import java.io.IOException
 
 @Component
 class JwtAuthEntryPoint : AuthenticationEntryPoint {
-
-
     @Throws(IOException::class, ServletException::class)
-    override fun commence(request: HttpServletRequest,
-                          response: HttpServletResponse,
-                          e: AuthenticationException
+    override fun commence(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        e: AuthenticationException
     ) {
-
         logger.error("Unauthorized error. Message - {}", e.message)
         response.sendError(SC_UNAUTHORIZED, "Invalid credentials")
     }

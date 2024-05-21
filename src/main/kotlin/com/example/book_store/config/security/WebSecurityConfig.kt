@@ -30,10 +30,12 @@ class WebSecurityConfig(
     fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
     }
+
     @Bean
     fun authenticationJwtTokenFilter(): JwtAuthTokenFilter {
         return JwtAuthTokenFilter(tokenProvider, userDetailsService)
     }
+
     @Bean
     @Throws(Exception::class)
     fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
@@ -51,11 +53,11 @@ class WebSecurityConfig(
                 authorize("/api/v1/cart/**", authenticated)
                 authorize("/api/v1/order/**", authenticated)
                 authorize("/api/v1/books/**", permitAll)
-                authorize("/api/v1/books/createOrUpdate",hasAuthority(RoleEnum.ADMIN.name))
+                authorize("/api/v1/books/createOrUpdate", hasAuthority(RoleEnum.ADMIN.name))
                 authorize(anyRequest, denyAll)
             }
             exceptionHandling {
-              //  authenticationEntryPoint(unauthorizedHandler)
+                //  authenticationEntryPoint(unauthorizedHandler)
             }
             sessionManagement {
                 sessionCreationPolicy = SessionCreationPolicy.STATELESS

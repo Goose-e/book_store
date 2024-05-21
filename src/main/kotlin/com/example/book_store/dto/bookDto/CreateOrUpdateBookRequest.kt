@@ -11,37 +11,37 @@ import java.math.BigDecimal
 data class CreateOrUpdateBookRequestDto(
     val genre: GenreEnum,
 
-    val bookPublisher:String,
+    val bookPublisher: String,
 
     val bookPrice: BigDecimal,
 
-    val bookDescription:String,
+    val bookDescription: String,
 
-    val bookPages:Int,
+    val bookPages: Int,
 
     val bookQuantity: Int,
 
-    val bookName:String,
+    val bookName: String,
 
-    val bookCode:String?
+    val bookCode: String?
 ) : Serializable
 
 data class CreatedBookDto(
-    val genre:GenreEnum ,
+    val genre: GenreEnum,
 
-    val bookPublisher:String,
+    val bookPublisher: String,
 
     val bookPrice: BigDecimal,
 
-    val bookDescription:String,
+    val bookDescription: String,
 
-    val bookPages:Int,
+    val bookPages: Int,
 
     val bookQuantity: Int,
 
-    val bookName:String,
+    val bookName: String,
 
-    val bookCode:String
+    val bookCode: String
 ) : ResponseDto
 
 

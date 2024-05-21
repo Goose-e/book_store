@@ -10,10 +10,11 @@ import com.example.book_store.models.User
 import org.springframework.http.ResponseEntity
 
 
-interface IUserService{
+interface IUserService {
     fun authenticateUser(loginRequest: LoginUserDto): ResponseEntity<*>
     fun getAllUsers(): MutableIterable<User>
     fun registerUser(newUserDto: NewUserRequestDto): HttpResponseBody<NewUserDto>
+
     @Throws(UserNotFoundException::class)
     fun getUserById(userId: Long?): ResponseEntity<UserDto?>?
 
@@ -22,7 +23,7 @@ interface IUserService{
         userId: Long?,
         userDetails: UserDto?
     ): ResponseEntity<UserDto?>?
-   }
+}
 
 
 

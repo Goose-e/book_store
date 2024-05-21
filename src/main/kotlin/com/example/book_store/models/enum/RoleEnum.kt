@@ -10,8 +10,8 @@ enum class RoleEnum(
 
     private val roleName: String
 ) {
-    USER(0,"USER","USER"),
-    ADMIN(1,"ADMIN","ADMIN")
+    USER(0, "USER", "USER"),
+    ADMIN(1, "ADMIN", "ADMIN")
     ;
 
     companion object {

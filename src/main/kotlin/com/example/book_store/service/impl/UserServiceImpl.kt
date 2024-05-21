@@ -38,14 +38,16 @@ import java.time.LocalDateTime.now
 
 
 @Service
-class UserServiceImpl (val authenticationManager: AuthenticationManager,
-                       val userRepository: UserRepository,
-                       val encoder: PasswordEncoder,
-                       val jwtProvider: JwtProvider,
-                       val coreEntityDao: CoreEntityDao,
-                       val userDao: UserDao,
-                        val cartDao:CartDao): IUserService {
-   override fun authenticateUser(loginRequest: LoginUserDto): ResponseEntity<*> {
+class UserServiceImpl(
+    val authenticationManager: AuthenticationManager,
+    val userRepository: UserRepository,
+    val encoder: PasswordEncoder,
+    val jwtProvider: JwtProvider,
+    val coreEntityDao: CoreEntityDao,
+    val userDao: UserDao,
+    val cartDao: CartDao
+) : IUserService {
+    override fun authenticateUser(loginRequest: LoginUserDto): ResponseEntity<*> {
 
         val user: User? = userRepository.findByLogin(loginRequest.login)
 
@@ -104,7 +106,7 @@ class UserServiceImpl (val authenticationManager: AuthenticationManager,
                 cartCode = GenerationService.generateCode(),
                 cartPrice = BigDecimal.ZERO
             )
-            saveInDB(coreEntity, user,coreEntityCart,cart)
+            saveInDB(coreEntity, user, coreEntityCart, cart)
             response.responseEntity = Mapper.mapUserToUserDTO(user)
             response.message = "User Created"
         }
@@ -119,8 +121,9 @@ class UserServiceImpl (val authenticationManager: AuthenticationManager,
     override fun updateUser(userId: Long?, userDetails: UserDto?): ResponseEntity<UserDto?>? {
         TODO("Not yet implemented")
     }
+
     @Transactional
-    fun saveInDB(coreEntity: CoreEntity, user: User,coreEntityCart:CoreEntity,cart:Cart) {
+    fun saveInDB(coreEntity: CoreEntity, user: User, coreEntityCart: CoreEntity, cart: Cart) {
         coreEntityDao.save(coreEntity)
         userDao.save(user)
         coreEntityDao.save(coreEntityCart)

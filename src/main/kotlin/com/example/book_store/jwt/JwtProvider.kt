@@ -15,15 +15,14 @@ import java.security.SignatureException
 import java.util.*
 
 @Component
-class JwtProvider(
-) {
-
-
+class JwtProvider {
     private val logger: Logger = LoggerFactory.getLogger(JwtProvider::class.java)
 
     @Value("\${app.jwtSecret:2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D}")
-    var jwtSecret: String = "2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D"
+    var jwtSecret: String =
+        "2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D2D4A614E645267556B58703273357638792F423F4428472B4B6250655368566D"
     final val key = hmacShaKeyFor(jwtSecret.toByteArray(UTF_8))
+
     @Value("\${app.jwtExpiration:86400}")
     var jwtExpiration: Int = 86400
 
@@ -59,7 +58,7 @@ class JwtProvider(
 
     fun getUserNameFromJwtToken(token: String): String {
         return Jwts.parser().setSigningKey(key).build().parseClaimsJws(token)
-            .getBody()["USERNAME"].toString()
+            .body["USERNAME"].toString()
 //        parser()
 //            .verifyWith(key)
 //            .build()

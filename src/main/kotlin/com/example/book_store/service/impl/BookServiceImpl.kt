@@ -81,7 +81,7 @@ class BookServiceImpl(
         lateinit var deletedBook: ChangeBookStatusDto
         changeBookStatusRequestDto.bookCode?.let { code ->
             bookDao.findByCodeForDel(code)?.let { ent ->
-                coreEntityDao.save(BookMapper.mapDeleteEntToEnt(ent,changeBookStatusRequestDto))
+                coreEntityDao.save(BookMapper.mapDeleteEntToEnt(ent, changeBookStatusRequestDto))
                 bookDao.findByCode(code)?.let {
                     deletedBook = BookMapper.mapBookToDelBookDTO(it, ent)
                     response.responseEntity = deletedBook

@@ -30,4 +30,4 @@ data class Book(
     @Column(name = "book_code")
     val bookCode: String,
 
-)
+    )

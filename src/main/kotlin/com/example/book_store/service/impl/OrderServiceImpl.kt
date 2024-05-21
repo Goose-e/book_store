@@ -8,11 +8,12 @@ import com.example.book_store.dao.OrderDao
 import com.example.book_store.dto.HttpResponseBody
 import com.example.book_store.dto.cartItemDto.CreateOrderRequestDto
 import com.example.book_store.dto.orderDto.CreateOrderItemList
-import com.example.book_store.dto.orderDto.CreateOrderItemRequestDto
 import com.example.book_store.dto.orderDto.CreateOrderItemResponse
+import com.example.book_store.dto.orderDto.GetCartItemDB
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.Order
 import com.example.book_store.models.enum.StatusEnum.ORDER_ACTUAL
+import com.example.book_store.models.enum.StatusEnum.ORDER_ITEM_ACTUAL
 import com.example.book_store.service.GenerationService
 import com.example.book_store.service.GenerationService.Companion.generateEntityId
 import com.example.book_store.service.OrderItemService
@@ -27,8 +28,9 @@ import java.time.LocalDateTime.now
 class OrderServiceImpl(
     val orderDao: OrderDao,
     val coreEntityDao: CoreEntityDao,
-    val orderItemService: OrderItemService
-) : OrderService {
+    val orderItemService: OrderItemService,
+
+    ) : OrderService {
 
     override fun createOrder(createOrderRequestDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderItemList> {
         val response: HttpResponseBody<CreateOrderItemList> = CreateOrderItemResponse()
@@ -53,24 +55,23 @@ class OrderServiceImpl(
                         orderDate = now(),
                         orderCode = GenerationService.generateCode()
                     )
+                    val cartId = orderItemService.orderItemDao.findCartByUserName(username)
+                    val getBook: MutableCollection<GetCartItemDB> = orderItemService.orderItemDao.findAllItems(cartId)
+                    var bookName: String
+                    if (getBook.isNotEmpty()) {
+                        saveInDB(coreEntity = coreEntity, order = order, getBook)
 
-                    saveInDB(coreEntity, order)
-                    response.responseEntity = orderItemService.createOrderItem(
-                        CreateOrderItemRequestDto(
-                            orderId = order.orderId,
-                            login = username
-                        )
-                    )
-                    response.responseEntity?.let {
-                        response.message = "Cart is empty"
+                        val createOrderItem = getBook.map {
+                            bookName = orderItemService.orderItemDao.findBookNameByBookId(it.bookId)
+                            orderItemService.orderItemMapper.mapCartItemListToOrderItemList(it, bookName)
+                        }
                     }
-                    response.message = "Order created successfully"
                 } ?: run {
                     response.message = "User not authorized to order ${createOrderRequestDto.address}"
                 }
 
             } ?: run {
-                response.message = "adress is empty"
+                response.message = "address is empty"
             }
         }
         if (response.errors.isNotEmpty()) {
@@ -82,10 +83,21 @@ class OrderServiceImpl(
     }
 
     @Transactional
-    fun saveInDB(coreEntity: CoreEntity, order: Order) {
+    fun saveInDB(coreEntity: CoreEntity, order: Order, books: MutableCollection<GetCartItemDB>) {
         coreEntityDao.save(coreEntity)
         orderDao.save(order)
-
+        books.map {
+            val coreEntity = CoreEntity(
+                coreEntityId = generateEntityId(),
+                createDate = now(),
+                deleteDate = LOCALDATETIME_NULL,
+                status = ORDER_ITEM_ACTUAL
+            )
+            var orderItem =
+                orderItemService.orderItemMapper.mapCartItemToOrderItem(it, order.orderId, coreEntity)
+            coreEntityDao.save(coreEntity)
+            orderItemService.orderItemDao.save(orderItem)
+        }
     }
 
 

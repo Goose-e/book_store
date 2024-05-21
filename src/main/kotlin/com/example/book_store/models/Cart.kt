@@ -11,13 +11,13 @@ import java.math.BigDecimal
 data class Cart(
     @Id
     @Column(name = "cart_id")
-    val cartId:Long?,
+    val cartId: Long?,
 
     @Column(name = "user_id")
-    val userId:Long?,
+    val userId: Long?,
     @Column(name = "cart_code")
-    val cartCode:String,
+    val cartCode: String,
 
     @Column(name = "cart_price")
-    val cartPrice:BigDecimal
+    val cartPrice: BigDecimal
 )

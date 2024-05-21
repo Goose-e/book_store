@@ -19,11 +19,13 @@ class AuthController(
 
 
     @PostMapping("/signin")
-    fun authenticateUser(@Valid @RequestBody loginRequest: LoginUserDto): ResponseEntity<*> = userService.authenticateUser(loginRequest)
+    fun authenticateUser(@Valid @RequestBody loginRequest: LoginUserDto): ResponseEntity<*> =
+        userService.authenticateUser(loginRequest)
 
 
     @PostMapping("/signup")
-    fun registerUser(@Valid @RequestBody newUserDto: NewUserRequestDto): HttpResponseBody<NewUserDto> = userService.registerUser(newUserDto)
+    fun registerUser(@Valid @RequestBody newUserDto: NewUserRequestDto): HttpResponseBody<NewUserDto> =
+        userService.registerUser(newUserDto)
 
 
 }

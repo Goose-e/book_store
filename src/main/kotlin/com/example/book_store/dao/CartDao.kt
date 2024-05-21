@@ -5,6 +5,6 @@ import com.example.book_store.repo.CartRepository
 import org.springframework.stereotype.Component
 
 @Component
-class CartDao(private val cartRepo:CartRepository){
+class CartDao(private val cartRepo: CartRepository) {
     fun save(cart: Cart) = cartRepo.save(cart)
 }

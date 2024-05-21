@@ -3,12 +3,12 @@ package com.example.book_store.dto.userDto
 import com.example.book_store.models.enum.RoleEnum
 
 
-data class UserDto (
-    val login:String,
-    val password:String,
-    val userAge:Int,
+data class UserDto(
+    val login: String,
+    val password: String,
+    val userAge: Int,
     val userRole: RoleEnum
-){
+) {
 
 
     override fun equals(other: Any?): Boolean {

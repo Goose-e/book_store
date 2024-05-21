@@ -1,4 +1,5 @@
 package com.example.book_store.models
+
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -9,13 +10,13 @@ import jakarta.persistence.Table
 data class CartItem(
     @Id
     @Column(name = "cart_item_id")
-    val cartItemsId:Long?,
+    val cartItemsId: Long?,
     @Column(name = "book_id")
-    val bookId:Long?,
+    val bookId: Long?,
     @Column(name = "cart_id")
-    val cartId:Long?,
+    val cartId: Long?,
     @Column(name = "cart_item_quantity")
-    val cartItemQuantity:Int?,
+    val cartItemQuantity: Int?,
     @Column(name = "cart_item_code")
-    val cartItemsCode:String
+    val cartItemsCode: String
 )

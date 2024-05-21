@@ -19,7 +19,8 @@ class BookMapper {
             genre = book.genre,
             bookCode = book.bookCode
         )
-        fun mapBookToDelBookDTO(book: Book, ent :CoreEntity): ChangeBookStatusDto = ChangeBookStatusDto(
+
+        fun mapBookToDelBookDTO(book: Book, ent: CoreEntity): ChangeBookStatusDto = ChangeBookStatusDto(
             bookName = book.bookName,
             bookCode = book.bookCode,
             bookStatusEnum = ent.status
@@ -46,9 +47,9 @@ class BookMapper {
                 bookPrice = book.bookPrice,
                 genre = book.genre,
                 bookStatusEnum = book.bookStatusEnum,
-                )
+            )
 
-        fun mapDeleteEntToEnt(core: CoreEntity,newStatus:ChangeBookStatusRequestDto): CoreEntity =
+        fun mapDeleteEntToEnt(core: CoreEntity, newStatus: ChangeBookStatusRequestDto): CoreEntity =
             core.copy(
                 status = newStatus.bookStatusEnum
             )

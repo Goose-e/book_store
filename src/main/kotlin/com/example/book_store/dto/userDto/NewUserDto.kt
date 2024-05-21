@@ -11,14 +11,14 @@ data class NewUserRequestDto(
     val login: String,
     val userAge: Int,
     val password: String
-):Serializable
+) : Serializable
 
-data class NewUserDto (
+data class NewUserDto(
     val login: String,
     val userAge: Int,
-    val userRole:RoleEnum,
+    val userRole: RoleEnum,
     val password: String
-    ) : ResponseDto
+) : ResponseDto
 
 data class CreateUserResponse(
     private val httpRequestId: RequestId = EMPTY_STRING

@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class UserDetailsService (
+class UserDetailsService(
     private val repository: UserRepository
-): UserDetailsService {
+) : UserDetailsService {
 
 
     @Throws(UserNotFoundException::class)
@@ -20,7 +20,7 @@ class UserDetailsService (
         val user = repository.findByLogin(username)
             ?: throw UserNotFoundException("User '$username' not found")
 
-        val authorities: List<GrantedAuthority> =  listOf(SimpleGrantedAuthority(user.userRole.getName()))
+        val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority(user.userRole.getName()))
 
         return org.springframework.security.core.userdetails.User
             .withUsername(username)

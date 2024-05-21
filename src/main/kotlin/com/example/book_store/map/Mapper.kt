@@ -10,13 +10,19 @@ class Mapper {
 
     companion object {
         fun mapUserToUserDTO(user: User): NewUserDto = NewUserDto(
-                    login = user.login,
-                    userRole = user.userRole,
-                    password = user.password,
-                    userAge = user.userAge)
+            login = user.login,
+            userRole = user.userRole,
+            password = user.password,
+            userAge = user.userAge
+        )
 
         fun mapUserDTOToUser(userDTO: UserDto): User =
-                User( login =  userDTO.login, password =  userDTO.password, userAge =  userDTO.userAge, userRole =  userDTO.userRole)
+            User(
+                login = userDTO.login,
+                password = userDTO.password,
+                userAge = userDTO.userAge,
+                userRole = userDTO.userRole
+            )
     }
 
 }

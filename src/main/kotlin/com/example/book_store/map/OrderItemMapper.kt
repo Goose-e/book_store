@@ -18,10 +18,12 @@ class OrderItemMapper {
         orderItemPrice = cartItem.orderItemPrice * cartItem.orderItemPrice,
         orderItemAmount = cartItem.orderItemAmount,
     )
-    fun mapCartItemListToOrderItemList(cartItem:GetCartItemDB,bookName:String):CreateOrderItemDto = CreateOrderItemDto(
-        bookName =bookName ,
-        bookPrice =cartItem.orderItemPrice * cartItem.orderItemPrice ,
-        bookQuantity = cartItem.orderItemAmount
 
-    )
+    fun mapCartItemListToOrderItemList(cartItem: GetCartItemDB, bookName: String): CreateOrderItemDto =
+        CreateOrderItemDto(
+            bookName = bookName,
+            bookPrice = cartItem.orderItemPrice * cartItem.orderItemPrice,
+            bookQuantity = cartItem.orderItemAmount
+
+        )
 }

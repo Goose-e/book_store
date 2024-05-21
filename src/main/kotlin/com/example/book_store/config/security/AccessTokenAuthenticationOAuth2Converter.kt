@@ -4,7 +4,7 @@ import org.springframework.core.convert.converter.Converter
 import org.springframework.security.oauth2.jwt.Jwt
 import java.util.*
 
-class AccessTokenAuthenticationOAuth2Converter: Converter<Jwt, AccessTokenAuthentication> {
+class AccessTokenAuthenticationOAuth2Converter : Converter<Jwt, AccessTokenAuthentication> {
     override fun convert(source: Jwt): AccessTokenAuthentication {
         val userId = source.getClaim<Long>("userId")
         val role = source.getClaim<String>("role")

@@ -14,14 +14,15 @@ data class ChangeBookStatusRequestDto(
 
 data class ChangeBookStatusDto(
 
-    val bookName:String,
+    val bookName: String,
 
-    val bookCode:String,
+    val bookCode: String,
     val bookStatusEnum: StatusEnum
 ) : ResponseDto
+
 data class DeleteBookDtoDB(
-    val bookName:String,
-    val bookCode:String,
+    val bookName: String,
+    val bookCode: String,
     val bookStatusEnum: StatusEnum
 ) : Serializable
 

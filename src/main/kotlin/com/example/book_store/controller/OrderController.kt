@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/order")
 class OrderController(
     private val orderService: OrderService,
-)
-{
+) {
 //    protected val logger: Log = LogFactory.getLog(this.javaClass)
 
     @PostMapping("/addOrder")
