@@ -8,4 +8,5 @@ import org.springframework.stereotype.Component
 class CoreEntityDao(private val coreEntityRepo: CoreEntityRepository) {
     fun save(coreEntity: CoreEntity) = coreEntityRepo.save(coreEntity)
     fun findEntityById(id: Long?): CoreEntity? = coreEntityRepo.findEntityById(id)
+    fun saveAll(coreEntities: List<CoreEntity>) = coreEntityRepo.saveAll(coreEntities)
 }

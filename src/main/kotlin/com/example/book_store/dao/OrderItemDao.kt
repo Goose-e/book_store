@@ -16,4 +16,5 @@ class OrderItemDao(
     fun findAllItems(cartId: Long?) = orderItemRepo.getAllItems(cartId)
     fun save(orderItem: OrderItem): OrderItem = orderItemRepo.save(orderItem)
     fun findBookNameByBookId(bookId: Long) = bookRepository.findBookNameById(bookId)
+    fun saveAll(orderItems: List<OrderItem>) = orderItemRepo.saveAll(orderItems)
 }

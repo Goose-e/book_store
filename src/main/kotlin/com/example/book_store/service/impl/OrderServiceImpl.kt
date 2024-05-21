@@ -12,10 +12,10 @@ import com.example.book_store.dto.orderDto.CreateOrderItemResponse
 import com.example.book_store.dto.orderDto.GetCartItemDB
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.Order
+import com.example.book_store.models.OrderItem
 import com.example.book_store.models.enum.StatusEnum.ORDER_ACTUAL
 import com.example.book_store.models.enum.StatusEnum.ORDER_ITEM_ACTUAL
 import com.example.book_store.service.GenerationService
-import com.example.book_store.service.GenerationService.Companion.generateEntityId
 import com.example.book_store.service.OrderItemService
 import com.example.book_store.service.OrderService
 import org.springframework.security.core.Authentication
@@ -28,77 +28,88 @@ import java.time.LocalDateTime.now
 class OrderServiceImpl(
     val orderDao: OrderDao,
     val coreEntityDao: CoreEntityDao,
-    val orderItemService: OrderItemService,
-
-    ) : OrderService {
+    val orderItemService: OrderItemService
+) : OrderService {
 
     override fun createOrder(createOrderRequestDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderItemList> {
         val response: HttpResponseBody<CreateOrderItemList> = CreateOrderItemResponse()
-        createOrderRequestDto.address?.let {
+        val address = createOrderRequestDto.address
+        if (address != null) {
             val authentication: Authentication = SecurityContextHolder.getContext().authentication
             val username = authentication.name
-            username?.let {
-                val price = orderDao.findCartPriceByUserName(username)
+            if (!username.isNullOrBlank()) {
                 val userId = orderDao.findUserId(username)
-                price?.let {
-                    val coreEntity = CoreEntity(
-                        coreEntityId = generateEntityId(),
+                val price = orderDao.findCartPriceByUserName(username)
+                if (price != null) {
+                    val orderCoreEntity = CoreEntity(
+                        coreEntityId = GenerationService.generateEntityId(),
                         createDate = now(),
                         deleteDate = LOCALDATETIME_NULL,
                         status = ORDER_ACTUAL
                     )
                     val order = Order(
-                        orderId = coreEntity.coreEntityId,
+                        orderId = orderCoreEntity.coreEntityId,
                         userId = userId,
-                        address = createOrderRequestDto.address,
+                        address = address,
                         orderPrice = price,
                         orderDate = now(),
                         orderCode = GenerationService.generateCode()
                     )
                     val cartId = orderItemService.orderItemDao.findCartByUserName(username)
-                    val getBook: MutableCollection<GetCartItemDB> = orderItemService.orderItemDao.findAllItems(cartId)
-                    var bookName: String
-                    if (getBook.isNotEmpty()) {
-                        saveInDB(coreEntity = coreEntity, order = order, getBook)
-
-                        val createOrderItem = getBook.map {
-                            bookName = orderItemService.orderItemDao.findBookNameByBookId(it.bookId)
-                            orderItemService.orderItemMapper.mapCartItemListToOrderItemList(it, bookName)
+                    val cartItems: MutableCollection<GetCartItemDB> = orderItemService.orderItemDao.findAllItems(cartId)
+                    if (cartItems.isNotEmpty()) {
+                        val orderItems = mutableListOf<OrderItem>()
+                        val orderItemCoreEntities = mutableListOf<CoreEntity>()
+                        cartItems.forEach { cartItem ->
+                            val itemCoreEntity = CoreEntity(
+                                coreEntityId = GenerationService.generateEntityId(),
+                                createDate = now(),
+                                deleteDate = LOCALDATETIME_NULL,
+                                status = ORDER_ITEM_ACTUAL
+                            )
+                            orderItemCoreEntities.add(itemCoreEntity)
+                            orderItems.add(
+                                orderItemService.orderItemMapper.mapOrderItemDtoToOrderItem(
+                                    cartItem,
+                                    itemCoreEntity,
+                                    orderId = order.orderId
+                                )
+                            )
                         }
+                        if (orderItems.isNotEmpty() && orderItemCoreEntities.isNotEmpty() && orderItems.size == orderItemCoreEntities.size ) {
+                            saveInDB(orderCoreEntity, order, orderItems, orderItemCoreEntities)
+                            response.message = "Order created successfully"
+                        }
+                       else{
+                           response.message = "Order creation failed"
+                       }
+                    } else {
+                        response.message = "Cart is empty"
                     }
-                } ?: run {
-                    response.message = "User not authorized to order ${createOrderRequestDto.address}"
+                } else {
+                    response.message = "User not found or cart price is invalid"
                 }
-
-            } ?: run {
-                response.message = "address is empty"
+            } else {
+                response.message = "Username is empty"
             }
-        }
-        if (response.errors.isNotEmpty()) {
-            response.responseCode = OC_BUGS
         } else {
-            response.responseCode = OC_OK
+            response.message = "Address is required"
         }
+
+        response.responseCode = if (response.errors.isNotEmpty()) OC_BUGS else OC_OK
         return response
     }
 
     @Transactional
-    fun saveInDB(coreEntity: CoreEntity, order: Order, books: MutableCollection<GetCartItemDB>) {
-        coreEntityDao.save(coreEntity)
+    fun saveInDB(
+        orderCoreEntity: CoreEntity,
+        order: Order,
+        orderItems: List<OrderItem>,
+        orderItemCoreEntities: List<CoreEntity>
+    ) {
+        coreEntityDao.save(orderCoreEntity)
         orderDao.save(order)
-        books.map {
-            val coreEntity = CoreEntity(
-                coreEntityId = generateEntityId(),
-                createDate = now(),
-                deleteDate = LOCALDATETIME_NULL,
-                status = ORDER_ITEM_ACTUAL
-            )
-            var orderItem =
-                orderItemService.orderItemMapper.mapCartItemToOrderItem(it, order.orderId, coreEntity)
-            coreEntityDao.save(coreEntity)
-            orderItemService.orderItemDao.save(orderItem)
-        }
+        coreEntityDao.saveAll(orderItemCoreEntities)
+        orderItemService.orderItemDao.saveAll(orderItems)
     }
-
-
 }

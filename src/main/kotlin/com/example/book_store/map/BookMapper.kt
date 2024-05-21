@@ -28,7 +28,6 @@ class BookMapper {
 
         fun toBook(book: Book, bookDto: CreateOrUpdateBookRequestDto, code: String): Book =
             book.copy(
-
                 bookName = bookDto.bookName,
                 bookPublisher = bookDto.bookPublisher,
                 bookDescription = bookDto.bookDescription,
