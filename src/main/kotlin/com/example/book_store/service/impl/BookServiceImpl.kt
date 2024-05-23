@@ -31,38 +31,77 @@ class BookServiceImpl(
 
     override fun addBook(bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> {
         val response: HttpResponseBody<CreatedBookDto> = CreateOrUpdateBookResponse()
-        lateinit var modifiedBook: Book
+        var modifiedBook: Book? = null
+
         bookRequestDto.bookCode?.let { code ->
             bookDao.findByCode(code)?.let {
-                BookMapper.toBook(it, bookRequestDto, code)
-                bookDao.save(modifiedBook)
+                modifiedBook = BookMapper.toBook(it, bookRequestDto, code)
+                bookDao.save(modifiedBook!!)
+                response.message = "book changed successfully!"
             } ?: run {
                 response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
+                response.message = "book not found"
             }
         } ?: run {
-
-            val coreEntity =  coreEntityService.createCoreEntity(StatusEnum.BOOK_ACTUAL)
-
-            val book = Book(
-                bookId = coreEntity.coreEntityId,
-                bookName = EMPTY_STRING,
-                bookPublisher = EMPTY_STRING,
-                bookDescription = EMPTY_STRING,
-                bookQuantity = INTEGER_ZERO,
-                bookPrice = BIGDECIMAL_ZERO,
-                bookPages = INTEGER_ZERO,
-                genre = NO_GENRE,
-                bookCode = EMPTY_STRING,
-            )
-
-            modifiedBook = BookMapper.toBook(book, bookRequestDto, GenerationService.generateCode())
-            saveInDB(coreEntity, modifiedBook)
+            val validationErrors = validateCreateOrUpdateBookRequestDto(bookRequestDto)
+            if (validationErrors.isNotEmpty()) {
+                response.errors.addAll(validationErrors)
+                response.message = "some field is empty"
+            } else {
+                val coreEntity = coreEntityService.createCoreEntity(StatusEnum.BOOK_ACTUAL)
+                modifiedBook = createBook(coreEntity, bookRequestDto)
+                saveInDB(coreEntity, modifiedBook!!)
+                response.message = "created book created successfully!"
+            }
         }
-        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
-        response.responseEntity = BookMapper.mapBookToBookDTO(modifiedBook)
+
+        response.responseCode = if (response.errors.isEmpty()) OC_OK else OC_BUGS
+        response.responseEntity = modifiedBook?.let { BookMapper.mapBookToBookDTO(it) }
         return response
     }
 
+    fun validateCreateOrUpdateBookRequestDto(bookRequestDto: CreateOrUpdateBookRequestDto): List<ErrorInfo> {
+        val errors = mutableListOf<ErrorInfo>()
+
+        if (bookRequestDto.genre == null) {
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Genre cannot be null"))
+        }
+        if (bookRequestDto.bookPublisher.isNullOrBlank()) {
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book publisher cannot be null or blank"))
+        }
+        if (bookRequestDto.bookPrice <= BIGDECIMAL_ZERO) {
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book price cannot be null"))
+        }
+        if (bookRequestDto.bookDescription.isNullOrBlank()) {
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book description cannot be null or blank"))
+        }
+        if (bookRequestDto.bookPages <= 0) {
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book pages must be a positive number"))
+        }
+        if (bookRequestDto.bookQuantity <= 0) {
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book quantity must be a positive number"))
+        }
+        if (bookRequestDto.bookName.isNullOrBlank()) {
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book name cannot be null or blank"))
+        }
+
+        return errors
+    }
+
+    fun createBook(coreEntity: CoreEntity, bookRequestDto: CreateOrUpdateBookRequestDto): Book {
+        val book = Book(
+            bookId = coreEntity.coreEntityId,
+            bookName = EMPTY_STRING,
+            bookPublisher = EMPTY_STRING,
+            bookDescription = EMPTY_STRING,
+            bookQuantity = INTEGER_ZERO,
+            bookPrice = BIGDECIMAL_ZERO,
+            bookPages = INTEGER_ZERO,
+            genre = NO_GENRE,
+            bookCode = EMPTY_STRING
+        )
+        return BookMapper.toBook(book, bookRequestDto, GenerationService.generateCode())
+    }
 
     @Transactional
     fun saveInDB(coreEntity: CoreEntity, book: Book) {
