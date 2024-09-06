@@ -79,6 +79,11 @@ class UserServiceImpl(
             response.message = "User already exist"
             response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "User already exist"))
         } ?: run {
+            val validationErrors = validateCreateOrUpdateUserRequestDto(newUserDto)
+            if (validationErrors.isNotEmpty()) {
+                response.errors.addAll(validationErrors)
+                response.message = "some field is empty"
+            } else{
 
             val coreEntity = coreEntityService.createCoreEntity(USER_ACTUAL)
 
@@ -99,12 +104,24 @@ class UserServiceImpl(
             )
             saveInDB(coreEntity, user, coreEntityCart, cart)
             response.responseEntity = Mapper.mapUserToUserDTO(user)
-            response.message = "User Created"
+            response.message = "User Created"}
         }
         if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
         return response
     }
-
+    fun validateCreateOrUpdateUserRequestDto(newUserDto: NewUserRequestDto):List<ErrorInfo>{
+        val errors = mutableListOf<ErrorInfo>()
+        if(newUserDto.login.isNullOrBlank()){
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "login cannot be null or blank"))
+        }
+        if(newUserDto.userAge <= 0){
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "age cannot be <= 0"))
+        }
+        if(newUserDto.password.isNullOrBlank()){
+            errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "password cannot be null or blank"))
+        }
+        return errors
+    }
     override fun getUserById(userId: Long?): ResponseEntity<UserDto?>? {
         TODO("Not yet implemented")
     }
