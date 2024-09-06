@@ -13,6 +13,7 @@ import com.example.book_store.map.Mapper
 import com.example.book_store.models.Cart
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.User
+import com.example.book_store.models.enum.RoleEnum.ADMIN
 import com.example.book_store.models.enum.RoleEnum.USER
 import com.example.book_store.models.enum.StatusEnum.CART_ACTUAL
 import com.example.book_store.models.enum.StatusEnum.USER_ACTUAL
