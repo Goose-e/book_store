@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 
 @CrossOrigin(origins = ["*"], maxAge = 3600)
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping("/api/v1/bookstore")
 class CreateBookController(
     private val bookService: BookService
 ) {
@@ -30,7 +30,7 @@ class CreateBookController(
         return bookService.getBook(bookRequestDto)
     }
 
-    @GetMapping("/getAllBooks/books")
+    @GetMapping("/home")
     fun getAllBook(): HttpResponseBody<ListBookDto> {
         return bookService.getAllBooks()
     }

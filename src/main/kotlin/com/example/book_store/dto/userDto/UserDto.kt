@@ -1,6 +1,10 @@
 package com.example.book_store.dto.userDto
 
+import com.example.book_store.models.enum.GenreEnum
 import com.example.book_store.models.enum.RoleEnum
+import com.example.book_store.models.enum.StatusEnum
+import java.io.Serializable
+import java.math.BigDecimal
 
 
 data class UserDto(
