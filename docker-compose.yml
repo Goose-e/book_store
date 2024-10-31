@@ -14,7 +14,7 @@ services:
     image: sha256:09021ffd9c8834ef7091f2b3fa2c7ced992051a06c0f50af86ac68b0e5f7ac28
     container_name: book_store_back
     ports:
-      - "5000:5000"
+      - "6000:5000"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/dev_book_store_db
       SPRING_DATASOURCE_USERNAME: dev_book_store_admin
@@ -32,7 +32,7 @@ services:
       context: C:\Users\goose\IdeaProjects\OOP\frontbookstore  # Папка, где находится Dockerfile
       dockerfile: Dockerfile  # Имя Dockerfile, если он называется по-другому
     ports:
-      - "8080:80"
+      - "8080:8080"
     volumes:
       - C:\\Users\\goose\\IdeaProjects\\OOP\\frontbookstore\\nginx\\nginx.conf:/etc/nginx/nginx.conf  # Путь к файлу конфигурации
 
