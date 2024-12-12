@@ -21,6 +21,7 @@ import com.example.book_store.service.GenerationService
 import org.dbs.validator.ErrorInfo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class BookServiceImpl(
@@ -56,7 +57,7 @@ class BookServiceImpl(
         }
 
         response.responseCode = if (response.errors.isEmpty()) OC_OK else OC_BUGS
-        response.responseEntity = modifiedBook?.let { BookMapper.mapBookToBookDTO(it) }
+        response.responseEntity = modifiedBook?.let { BookMapper.mapBookToBookDTO(it, convertImageToBase64(it.image)) }
         return response
     }
 
@@ -98,15 +99,57 @@ class BookServiceImpl(
             bookPrice = BIGDECIMAL_ZERO,
             bookPages = INTEGER_ZERO,
             genre = NO_GENRE,
-            bookCode = EMPTY_STRING
+            bookCode = EMPTY_STRING,
+            image = null
         )
-        return BookMapper.toBook(book, bookRequestDto, GenerationService.generateCode())
+        return BookMapper.toBook(
+            book,
+            bookRequestDto,
+            GenerationService.generateCode(),
+            convertBase64ToByteArray(bookRequestDto.image)
+        )
+    }
+
+    override fun getBookByCode(bookRequestCodeDto: GetBookCodeRequestDto): HttpResponseBody<GetBookCodeDto> {
+        val response: HttpResponseBody<GetBookCodeDto> = GetBookCodeResponse()
+        lateinit var foundBooks: GetBookCodeDto
+        val getBook: Book? = bookDao.findByCode(bookRequestCodeDto.bookCode)
+        if (getBook != null) {
+
+            val bookDto = BookMapper.mapBookToBookDTO(getBook, convertImageToBase64(getBook.image))
+
+            foundBooks = GetBookCodeDto(
+                bookName = bookDto.bookName,
+                bookCode = bookDto.bookCode,
+                bookPublisher = bookDto.bookPublisher,
+                bookPrice = bookDto.bookPrice,
+                genre = bookDto.genre,
+                image = bookDto.image,
+                bookDescription = bookDto.bookDescription
+            )
+            response.responseEntity = foundBooks
+            response.message = "Book found"
+        } else {
+            response.message = "Book not found"
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
+        }
+
+        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
+        return response
     }
 
     @Transactional
     fun saveInDB(coreEntity: CoreEntity, book: Book) {
         coreEntityDao.save(coreEntity)
         bookDao.save(book)
+    }
+
+    fun convertBase64ToByteArray(base64String: String?): ByteArray {
+        if (base64String != null) {
+            return Base64.getDecoder().decode(base64String)
+        } else {
+            return ByteArray(-1)
+        }
     }
 
     override fun changeBookStatus(changeBookStatusRequestDto: ChangeBookStatusRequestDto): HttpResponseBody<ChangeBookStatusDto> {
@@ -132,6 +175,9 @@ class BookServiceImpl(
         return response
     }
 
+    fun convertImageToBase64(image: ByteArray?): String? {
+        return image?.let { Base64.getEncoder().encodeToString(it) }
+    }
 
     @Transactional
     override fun getBook(bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto> {
@@ -139,7 +185,8 @@ class BookServiceImpl(
         lateinit var foundBooks: ListBookDto
         val getBook: MutableCollection<GetBookDtoDB> = bookDao.findByName(bookRequestDto.bookName)
         if (getBook.isNotEmpty()) {
-            val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it) }
+
+            val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it, convertImageToBase64(it.image)) }
             foundBooks = ListBookDto(listBookDto = listBookDto)
             response.responseEntity = foundBooks
             response.message = "Book found"
@@ -158,7 +205,7 @@ class BookServiceImpl(
 
         val getBook: MutableCollection<GetBookDtoDB> = bookDao.findAllBooks()
         if (getBook.isNotEmpty()) {
-            val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it) }
+            val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it, convertImageToBase64(it.image)) }
             response.responseEntity = ListBookDto(listBookDto = listBookDto)
             response.message = "Books"
         } else {

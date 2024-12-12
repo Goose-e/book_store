@@ -5,13 +5,14 @@ import com.example.book_store.dto.userDto.GetUserDto
 import com.example.book_store.dto.userDto.GetUserDtoDB
 import com.example.book_store.models.Book
 import com.example.book_store.models.CoreEntity
+import org.springframework.stereotype.Component
 
-
+@Component
 class UserMapper {
 
 
     companion object {
-        fun mapBookToBookDTO(book: Book): CreatedBookDto = CreatedBookDto(
+        fun mapBookToBookDTO(book: Book,bookImage:String): CreatedBookDto = CreatedBookDto(
             bookName = book.bookName,
             bookPublisher = book.bookPublisher,
             bookDescription = book.bookDescription,
@@ -19,7 +20,8 @@ class UserMapper {
             bookPrice = book.bookPrice,
             bookPages = book.bookPages,
             genre = book.genre,
-            bookCode = book.bookCode
+            bookCode = book.bookCode,
+            image = bookImage,
         )
 
         fun mapBookToDelBookDTO(book: Book, ent: CoreEntity): ChangeBookStatusDto = ChangeBookStatusDto(

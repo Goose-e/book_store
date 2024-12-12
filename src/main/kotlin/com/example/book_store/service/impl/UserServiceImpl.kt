@@ -15,6 +15,7 @@ import com.example.book_store.map.UserMapper
 import com.example.book_store.models.Cart
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.User
+import com.example.book_store.models.enum.RoleEnum.ADMIN
 import com.example.book_store.models.enum.RoleEnum.USER
 import com.example.book_store.models.enum.StatusEnum.CART_ACTUAL
 import com.example.book_store.models.enum.StatusEnum.USER_ACTUAL
@@ -30,6 +31,7 @@ import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder

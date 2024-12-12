@@ -23,7 +23,8 @@ data class CreateOrUpdateBookRequestDto(
 
     val bookName: String,
 
-    val bookCode: String?
+    val bookCode: String?,
+    val image: String?
 ) : Serializable
 
 data class CreatedBookDto(
@@ -41,7 +42,8 @@ data class CreatedBookDto(
 
     val bookName: String,
 
-    val bookCode: String
+    val bookCode: String,
+    val image: String?
 ) : ResponseDto
 
 

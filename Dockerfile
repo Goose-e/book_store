@@ -32,7 +32,7 @@ WORKDIR /app
 
 # Копируем собранный артефакт из предыдущего этапа
 COPY --from=builder /app/build/libs/*.jar app.jar
-EXPOSE 5000
+EXPOSE 8080
 
 # Указываем, что будет запускаться при старте контейнера
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -13,23 +13,26 @@ import org.springframework.web.bind.annotation.*
 class CreateBookController(
     private val bookService: BookService
 ) {
-    @PostMapping("/createOrUpdate")
+    @PostMapping("/admin/createOrUpdate")
     fun createOrUpdateBook(@Valid @RequestBody bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> =
         run {
             bookService.addBook(bookRequestDto)
         }
 
-    @PostMapping("/changeBookStatus")
+    @PostMapping("/admin/changeBookStatus")
     fun deleteBook(@Valid @RequestBody bookRequestDto: ChangeBookStatusRequestDto): HttpResponseBody<ChangeBookStatusDto> =
         run {
             bookService.changeBookStatus(bookRequestDto)
         }
 
     @GetMapping("/getByBookName/{bookName}")
-    fun getBookByBookName(@PathVariable(value = "bookName") bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto> {
+    fun getBookByName(@PathVariable(value = "bookName") bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto> {
         return bookService.getBook(bookRequestDto)
     }
-
+    @GetMapping("/getByBookName/{bookCode}")
+    fun getBookByCode(@PathVariable(value = "bookCode") bookRequestDto: GetBookCodeRequestDto): HttpResponseBody<GetBookCodeDto> {
+        return bookService.getBookByCode(bookRequestDto)
+    }
     @GetMapping("/home")
     fun getAllBook(): HttpResponseBody<ListBookDto> {
         return bookService.getAllBooks()

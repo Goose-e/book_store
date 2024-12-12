@@ -8,4 +8,5 @@ interface BookService {
     fun changeBookStatus(bookCode: ChangeBookStatusRequestDto): HttpResponseBody<ChangeBookStatusDto>
     fun getBook(bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto>
     fun getAllBooks(): HttpResponseBody<ListBookDto>
+    fun getBookByCode(bookRequestCodeDto: GetBookCodeRequestDto):HttpResponseBody<GetBookCodeDto>
 }

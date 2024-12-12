@@ -7,6 +7,7 @@ import com.example.book_store.models.enum.RoleEnum
 import com.example.book_store.service.UserDetailsService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -52,8 +53,8 @@ class WebSecurityConfig(
                 authorize("/api/v1/users/**", authenticated)
                 authorize("/api/v1/cart/**", authenticated)
                 authorize("/api/v1/order/**", authenticated)
-                authorize("/api/v1/books/**", permitAll)
-                authorize("/api/v1/books/createOrUpdate", hasAuthority(RoleEnum.ADMIN.name))
+                authorize("/api/v1/bookstore/**", permitAll)
+                authorize("/api/v1/bookstore/admin", hasAuthority(RoleEnum.ADMIN.name))
                 authorize(anyRequest, denyAll)
             }
             exceptionHandling {
