@@ -72,18 +72,31 @@ class CartItemServiceImpl(
                 val authentication: Authentication = SecurityContextHolder.getContext().authentication
                 val username = authentication.name
                 username?.let {
+
                     val cartId = cartItemDao.findCartByUserName(username)
-                    val coreEntity = coreEntityService.createCoreEntity(CART_ITEM_ACTUAL)
-                    val item = CartItem(
-                        cartItemsId = coreEntity.coreEntityId,
-                        bookId = bookId,
-                        cartId = cartId,
-                        cartItemQuantity = 1,
-                        cartItemsCode = GenerationService.generateCode()
-                    )
-                    response.responseEntity = cartItemMapper.createCartItemDto(item)
-                    saveToDB(coreEntity, item)
-                    response.message = "Iteam added successfully"
+                    val itemInCart: CartItem? = cartItemDao.findCartItemByBookCode(bookCode, cartId)
+                    if (itemInCart != null) {
+                        val i: Int? = itemInCart.cartItemQuantity
+                        if (i != null) {
+                            val item = cartItemMapper.changeItemQuantity(itemInCart, i + 1)
+                            cartItemDao.save(item)
+                            response.responseEntity = cartItemMapper.createCartItemDto(item)
+                            response.message = "Quantity changed successfully"
+                        }
+                    } else {
+                        val coreEntity = coreEntityService.createCoreEntity(CART_ITEM_ACTUAL)
+                        val item = CartItem(
+                            cartItemsId = coreEntity.coreEntityId,
+                            bookId = bookId,
+                            cartId = cartId,
+                            cartItemQuantity = 1,
+                            cartItemsCode = GenerationService.generateCode()
+                        )
+                        response.responseEntity = cartItemMapper.createCartItemDto(item)
+                        saveToDB(coreEntity, item)
+                        response.message = "Item added successfully"
+                    }
+
                 }
             } ?: run {
                 response.message = "Book not found"

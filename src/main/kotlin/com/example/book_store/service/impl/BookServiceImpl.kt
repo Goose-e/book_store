@@ -125,7 +125,8 @@ class BookServiceImpl(
                 bookPrice = bookDto.bookPrice,
                 genre = bookDto.genre,
                 image = bookDto.image,
-                bookDescription = bookDto.bookDescription
+                bookDescription = bookDto.bookDescription,
+                quantity = bookDto.bookQuantity
             )
             response.responseEntity = foundBooks
             response.message = "Book found"

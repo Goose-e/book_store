@@ -1,4 +1,4 @@
-CREATE ROLE dev_book_store_admin WITH LOGIN CREATEDB ENCRYPTED PASSWORD 'fakedPassword';
+1CREATE ROLE dev_book_store_admin WITH LOGIN CREATEDB ENCRYPTED PASSWORD 'fakedPassword';
 
 create sequence seq_action_id;
 

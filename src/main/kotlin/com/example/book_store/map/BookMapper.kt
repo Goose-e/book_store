@@ -50,7 +50,8 @@ class BookMapper {
                 bookPrice = book.bookPrice,
                 genre = book.genre,
                 bookStatusEnum = book.bookStatusEnum,
-                image = bookImage
+                image = bookImage,
+                code = book.code
             )
 
         fun mapDeleteEntToEnt(core: CoreEntity, newStatus: ChangeBookStatusRequestDto): CoreEntity =

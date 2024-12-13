@@ -24,7 +24,8 @@ data class GetBookDto(
     val bookDescription: String,
     val bookName: String,
     val bookStatusEnum: StatusEnum,
-    val image: String?
+    val image: String?,
+    val code: String
 ) : Serializable
 
 
@@ -36,7 +37,7 @@ data class GetBookDtoDB(
     val bookName: String,
     val bookStatusEnum: StatusEnum,
     val image: ByteArray?,
-    val code:String
+    val code: String
 ) : Serializable
 
 data class GetBookCodeDto(
@@ -46,7 +47,8 @@ data class GetBookCodeDto(
     val bookDescription: String,
     val bookName: String,
     val bookCode: String,
-    val image: String?
+    val image: String?,
+    val quantity: Int,
 ) : ResponseDto
 
 data class ListBookDto(

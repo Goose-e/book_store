@@ -19,7 +19,7 @@ interface BookRepository : CrudRepository<Book, Long> {
     @Query("select  new com.example.book_store.dto.bookDto.GetBookDtoDB( b.genre, b.bookPublisher, b.bookPrice, b.bookDescription,b.bookName,ent.status,b.image,b.bookCode)  from Book b LEFT JOIN CoreEntity ent on  ent.coreEntityId = b.bookId where b.bookName = :book  ")
     fun findByBookName(@Param("book") book: String): MutableCollection<GetBookDtoDB>
 
-    @Query("select new com.example.book_store.dto.bookDto.GetBookDtoDB( b.genre, b.bookPublisher, b.bookPrice, b.bookDescription,b.bookName,ent.status,b.image.b.bookCode ) from Book b LEFT JOIN CoreEntity ent on  ent.coreEntityId = b.bookId")
+    @Query("select new com.example.book_store.dto.bookDto.GetBookDtoDB( b.genre, b.bookPublisher, b.bookPrice, b.bookDescription,b.bookName,ent.status,b.image,b.bookCode ) from Book b LEFT JOIN CoreEntity ent on  ent.coreEntityId = b.bookId")
     fun findAllBooks(): MutableCollection<GetBookDtoDB>
 
     @Query("select b.bookName from Book b where b.bookId = :bookId")

@@ -14,6 +14,9 @@ interface CartItemRepository : CrudRepository<CartItem, Int> {
     @Query("SELECT c.cartId FROM Cart c JOIN User u ON c.userId = u.userId  WHERE u.login = :login")
     fun findCartIdByUserLogin(@Param("login") login: String): Long?
 
+    @Query("SELECT c FROM CartItem c where c.bookId = (select b.bookId from Book b where b.bookCode = :bookCode  ) and c.cartId =:cartId ") // AND c.cartItemQuantity <= b.bookQuantity+1
+    fun findItemInCartByBookCode(@Param("bookCode") bookCode: String,@Param("cartId") cartId:Long?): CartItem?
+
     @Query("SELECT ent FROM CartItem c JOIN CoreEntity ent on  ent.coreEntityId = c.cartItemsId  where c.cartItemsCode = :code")
     fun findEntityByItemCode(@Param("code") bookCode: String): CoreEntity?
 

@@ -29,7 +29,7 @@ class CreateBookController(
     fun getBookByName(@PathVariable(value = "bookName") bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto> {
         return bookService.getBook(bookRequestDto)
     }
-    @GetMapping("/getByBookName/{bookCode}")
+    @GetMapping("/getByBookCode/{bookCode}")
     fun getBookByCode(@PathVariable(value = "bookCode") bookRequestDto: GetBookCodeRequestDto): HttpResponseBody<GetBookCodeDto> {
         return bookService.getBookByCode(bookRequestDto)
     }

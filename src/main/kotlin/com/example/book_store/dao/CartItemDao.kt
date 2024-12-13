@@ -17,4 +17,5 @@ class CartItemDao(
     fun findItemByItemCode(Code: String) = cartItemRepository.findItemByItemCode(Code)
     fun findAllItems(cartId: Long?) = cartItemRepository.getAllItems(cartId)
     fun findCartById(cartId: Long?) = cartRepository.findById(cartId)
+    fun findCartItemByBookCode(bookCode: String,cartId: Long?) = cartItemRepository.findItemInCartByBookCode(bookCode,cartId)
 }
