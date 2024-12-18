@@ -39,13 +39,14 @@ class CartItemMapper {
 
     fun cartPrice(price: BigDecimal, cart: Cart): Cart = cart.copy(cartPrice = price)
 
-    fun mapBookFromListToBookDTO(book: GetItemListDtoDB): GetItemListDto =
+    fun mapBookFromListToBookDTO(book: GetItemListDtoDB,image:String?): GetItemListDto =
         GetItemListDto(
             bookName = book.bookName,
-            bookGenre = book.bookGenre,
+            bookGenre = book.bookGenre.getName(),
             bookCode = book.bookCode,
             itemQuantity = book.itemQuantity,
             itemCode = book.itemCode,
             bookPrice = book.bookPrice,
+            image = image
         )
 }

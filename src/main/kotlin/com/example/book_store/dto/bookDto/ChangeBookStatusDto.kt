@@ -9,13 +9,11 @@ import java.io.Serializable
 
 data class ChangeBookStatusRequestDto(
     val bookCode: String?,
-    val bookStatusEnum: StatusEnum
+    val bookStatusId: Int
 ) : Serializable
 
 data class ChangeBookStatusDto(
-
     val bookName: String,
-
     val bookCode: String,
     val bookStatusEnum: StatusEnum
 ) : ResponseDto

@@ -1,7 +1,8 @@
 package com.example.book_store.dao
 
-import com.example.book_store.dto.userDto.GetUserDto
 import com.example.book_store.dto.userDto.GetUserDtoDB
+import com.example.book_store.dto.userDto.NewStatusDB
+import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.User
 import com.example.book_store.repo.UserRepository
 import org.springframework.data.repository.CrudRepository
@@ -15,11 +16,10 @@ class UserDao(
     override fun <S : User?> save(entity: S & Any): S & Any {
         return userRepo.save(entity)
     }
-
+    fun findByLoginForReg(login:String):User? = userRepo.findByLoginForReg(login)
     override fun findAll(): MutableIterable<User> {
         TODO("Not yet implemented")
     }
-
     override fun <S : User?> saveAll(entities: MutableIterable<S>): MutableIterable<S> {
         TODO("Not yet implemented")
     }
@@ -33,8 +33,8 @@ class UserDao(
     }
 
     fun findAllUsers(): MutableCollection<GetUserDtoDB> = userRepo.getAllUserDto()
-
-
+    fun findEntByLogin(login:String): CoreEntity? = userRepo.findByEntLogin(login)
+    fun findByLogin(login:String):NewStatusDB? = userRepo.findByLogin(login)
     override fun findAllById(ids: MutableIterable<Long>): MutableIterable<User> {
         TODO("Not yet implemented")
     }

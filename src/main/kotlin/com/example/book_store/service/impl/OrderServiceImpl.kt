@@ -2,30 +2,37 @@ package com.example.book_store.service.impl
 
 import com.example.book_store.constant.SysConst.BIGDECIMAL_ZERO
 import com.example.book_store.constant.SysConst.EMPTY_STRING
+import com.example.book_store.constant.SysConst.INVALID_ENTITY_ATTR
 import com.example.book_store.constant.SysConst.LONG_ZERO
 import com.example.book_store.constant.SysConst.OC_BUGS
 import com.example.book_store.constant.SysConst.OC_OK
+import com.example.book_store.dao.BookDao
+import com.example.book_store.dao.CartItemDao
 import com.example.book_store.dao.CoreEntityDao
 import com.example.book_store.dao.OrderDao
 import com.example.book_store.dto.HttpResponseBody
 import com.example.book_store.dto.cartItemDto.CreateOrderRequestDto
-import com.example.book_store.dto.orderDto.CreateOrderItemList
-import com.example.book_store.dto.orderDto.CreateOrderItemResponse
-import com.example.book_store.dto.orderDto.GetCartItemDB
+import com.example.book_store.dto.cartItemDto.GetItemListDtoDB
+import com.example.book_store.dto.cartItemDto.GetItemListResponse
+import com.example.book_store.dto.cartItemDto.ListCartItemDto
+import com.example.book_store.dto.orderDto.*
+import com.example.book_store.map.BookMapper
+import com.example.book_store.map.CartItemMapper
 import com.example.book_store.map.OrderMapper
+import com.example.book_store.models.Book
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.Order
 import com.example.book_store.models.OrderItem
+import com.example.book_store.models.enum.StatusEnum
 import com.example.book_store.models.enum.StatusEnum.ORDER_ACTUAL
 import com.example.book_store.models.enum.StatusEnum.ORDER_ITEM_ACTUAL
-import com.example.book_store.service.CoreEntityService
-import com.example.book_store.service.GenerationService
-import com.example.book_store.service.OrderItemService
-import com.example.book_store.service.OrderService
+import com.example.book_store.service.*
+import org.dbs.validator.ErrorInfo
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDateTime.now
 
 @Service
@@ -34,7 +41,12 @@ class OrderServiceImpl(
     val coreEntityDao: CoreEntityDao,
     val orderItemService: OrderItemService,
     val orderMapper: OrderMapper,
-    val coreEntityService: CoreEntityService
+    val coreEntityService: CoreEntityService,
+    val cartItemMapper: CartItemMapper,
+    val cartItemDao: CartItemDao,
+    val bookMapper: BookMapper,
+    val bookDao: BookDao,
+    val bookService: BookService
 ) : OrderService {
     override fun createOrUpdateOrder(createOrderRequestDto: CreateOrderRequestDto): HttpResponseBody<CreateOrderItemList> {
         val response: HttpResponseBody<CreateOrderItemList> = CreateOrderItemResponse()
@@ -49,17 +61,20 @@ class OrderServiceImpl(
             cart?.let {
                 if (cart.cartPrice != BIGDECIMAL_ZERO) {
                     val orderCoreEntity = coreEntityService.createCoreEntity(ORDER_ACTUAL)
-
-                    val order =
-                        orderMapper.createOrderMapper(
-                            createOrder(orderCoreEntity.coreEntityId),
-                            createOrderRequestDto.address,
-                            cart.cartPrice,
-                            userId
-                        )
+                    val order = orderMapper.createOrderMapper(
+                        createOrder(orderCoreEntity.coreEntityId),
+                        createOrderRequestDto.address,
+                        cart.cartPrice,
+                        userId
+                    )
                     val cartItems: MutableCollection<GetCartItemDB> =
                         orderItemService.orderItemDao.findAllItems(cart.cartId)
                     if (cartItems.isNotEmpty()) {
+                        val booksInCart: MutableCollection<Book> = cartItemDao.findAllBooksInCart(cart.cartId)
+                        cartItems.forEach { cartItem ->
+
+                        }
+
                         val orderItems = mutableListOf<OrderItem>()
                         val orderItemCoreEntities = mutableListOf<CoreEntity>()
                         cartItems.forEach { cartItem ->
@@ -71,9 +86,26 @@ class OrderServiceImpl(
                                     itemCoreEntity,
                                     orderId = order.orderId
                                 )
+
                             )
+                            val ent = cartItemDao.findEntityByItemCode(cartItem.cartItemCode)
+                            if (ent != null) {
+                                coreEntityDao.save(cartItemMapper.deleteCartItem(ent))
+                            }
+                            booksInCart.firstOrNull { book -> book.bookId == cartItem.bookId }?.let { book ->
+                                val quantity = book.bookQuantity - cartItem.orderItemAmount
+                                bookDao.save(bookService.bookMapper.mapChangeBookQuantity(book, quantity))
+                                if (quantity == 0) {
+                                    val entityToDelete = bookDao.findByCodeForDel(book.bookCode)
+                                    val bookStatus = StatusEnum.getEnum(2)
+                                    if (entityToDelete != null) {
+                                        coreEntityDao.save(BookMapper.mapDeleteEntToEnt(entityToDelete, bookStatus))
+                                    }
+
+                                }
+                            }
                         }
-                        saveInDB(orderCoreEntity, order, orderItems, orderItemCoreEntities)
+                        saveInDB(orderCoreEntity, order, orderItems, orderItemCoreEntities, booksInCart)
                     } else {
                         response.message = "Cart is empty"
                     }
@@ -109,6 +141,32 @@ class OrderServiceImpl(
         return response
     }
 
+    override fun getAllOrders(): HttpResponseBody<ListAllOrders> {
+        val response: HttpResponseBody<ListAllOrders> = GetAllOrdersResponse()
+
+
+        val ordersList: MutableCollection<GetAllOrdersDB> = orderDao.getAllOrders()
+        if (ordersList.isNotEmpty()) {
+            val getOrderDto = ordersList.map {
+                orderMapper.getOrdersAllMapper(it)
+            }
+
+            response.responseEntity = ListAllOrders(listOrderDto = getOrderDto)
+            response.message = "Orders"
+        } else {
+            response.message = "Orders is empty"
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Orders is empty"))
+        }
+
+        if (response.errors.isNotEmpty()) {
+            response.responseCode = OC_BUGS
+        } else {
+            response.responseCode = OC_OK
+        }
+
+        return response
+    }
+
     private fun createOrder(entityId: Long): Order = Order(
         orderId = entityId,
         userId = LONG_ZERO,
@@ -123,11 +181,40 @@ class OrderServiceImpl(
         orderCoreEntity: CoreEntity,
         order: Order,
         orderItems: List<OrderItem>,
-        orderItemCoreEntities: List<CoreEntity>
+        orderItemCoreEntities: List<CoreEntity>,
+        books: MutableCollection<Book>,
     ) {
         coreEntityDao.save(orderCoreEntity)
         orderDao.save(order)
         coreEntityDao.saveAll(orderItemCoreEntities)
         orderItemService.orderItemDao.saveAll(orderItems)
+        // bookDao.saveAll(books)
+    }
+
+    override fun getAllOrdersOfUser(): HttpResponseBody<ListOrders> {
+        val response: HttpResponseBody<ListOrders> = GetOrdersResponse()
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+        val username = authentication.name
+        username?.let {
+            val ordersList: MutableCollection<GetOrdersDB> = orderDao.findOrderByUserName(username)
+            if (ordersList.isNotEmpty()) {
+                val getOrderDto = ordersList.map {
+                    orderMapper.getOrdersMapper(it)
+                }
+
+                response.responseEntity = ListOrders(listOrderDto = getOrderDto)
+                response.message = "Orders"
+            } else {
+                response.message = "Orders is empty"
+                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Orders is empty"))
+            }
+
+            if (response.errors.isNotEmpty()) {
+                response.responseCode = OC_BUGS
+            } else {
+                response.responseCode = OC_OK
+            }
+        }
+        return response
     }
 }

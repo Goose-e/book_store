@@ -20,6 +20,8 @@ interface IUserService {
         userId: Long?,
         userDetails: UserDto?
     ): ResponseEntity<UserDto?>?
+
+    fun newUserStatus(newStatusDto: NewStatusDtoRequest): HttpResponseBody<NewStatusDto>
 }
 
 

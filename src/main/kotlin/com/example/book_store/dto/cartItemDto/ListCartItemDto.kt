@@ -11,11 +11,12 @@ import java.math.BigDecimal
 
 data class GetItemListDto(
     val bookName: String,
-    val bookGenre: GenreEnum,
+    val bookGenre: String,
     val bookCode: String,
     val itemQuantity: Int,
     val itemCode: String,
     val bookPrice: BigDecimal,
+    val image:String?
 ) : Serializable
 
 data class GetItemListDtoDB(
@@ -25,6 +26,7 @@ data class GetItemListDtoDB(
     val bookPrice: BigDecimal,
     val itemCode: String,
     val itemQuantity: Int,
+    val image:ByteArray?
 ) : Serializable
 
 data class ListCartItemDto(

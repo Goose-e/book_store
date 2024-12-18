@@ -27,6 +27,7 @@ class OrderItemMapper {
 
         )
 
+
     fun mapOrderItemDtoToOrderItem(item: GetCartItemDB, coreEntity: CoreEntity, orderId: Long?): OrderItem = OrderItem(
         orderItemId = coreEntity.coreEntityId,
         orderId = orderId,

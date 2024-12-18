@@ -8,8 +8,7 @@ import java.io.Serializable
 import java.math.BigDecimal
 
 data class CreateOrderItemRequestDto(
-    val orderId: Long?,
-    val login: String
+    val orderId: Long?
 ) : Serializable
 
 data class CreateOrderItemList(
@@ -25,7 +24,8 @@ data class CreateOrderItemDto(
 data class GetCartItemDB(
     val bookId: Long,
     val orderItemPrice: BigDecimal,
-    val orderItemAmount: Int
+    val orderItemAmount: Int,
+    val cartItemCode:String
 ) : Serializable
 
 data class CreateOrderItemResponse(

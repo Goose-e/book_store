@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
+import java.util.*
 
 
 @Service
@@ -31,6 +32,18 @@ class CartItemServiceImpl(
     val cartDao: CartDao,
     val coreEntityService: CoreEntityService
 ) : CartItemService {
+    fun convertBase64ToByteArray(base64String: String?): ByteArray {
+        if (base64String != null) {
+            return Base64.getDecoder().decode(base64String)
+        } else {
+            return ByteArray(-1)
+        }
+    }
+
+    fun convertImageToBase64(image: ByteArray?): String? {
+        return image?.let { Base64.getEncoder().encodeToString(it) }
+    }
+
     override fun getAll(): HttpResponseBody<ListCartItemDto> {
         val response: HttpResponseBody<ListCartItemDto> = GetItemListResponse()
         var price: BigDecimal = BigDecimal.ZERO
@@ -42,7 +55,7 @@ class CartItemServiceImpl(
             if (getBook.isNotEmpty()) {
                 val listBookDto = getBook.map {
                     price += it.bookPrice
-                    cartItemMapper.mapBookFromListToBookDTO(it)
+                    cartItemMapper.mapBookFromListToBookDTO(it, convertImageToBase64(it.image))
                 }
 
                 val cart = cartItemMapper.cartPrice(price, cartItemDao.findCartById(cartId))
@@ -141,6 +154,15 @@ class CartItemServiceImpl(
                 response.message = "Quantity is negative"
             } else {
                 cartItemDao.findItemByItemCode(itemCode)?.let { item ->
+                    if (item.cartItemQuantity!! < changeCartItemQuantityRequestDto.quantity) {
+                        if (cartItemDao.findItemCheck(itemCode, changeCartItemQuantityRequestDto.quantity) == null) {
+                            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Максимум книг"))
+                            response.message = "Too much"
+                            if (response.errors.isNotEmpty()) response.responseCode =
+                                OC_BUGS else response.responseCode = OC_OK
+                            return response
+                        }
+                    }
                     val changeItem = cartItemMapper.changeItemQuantity(item, changeCartItemQuantityRequestDto.quantity)
                     cartItemDao.save(changeItem)
                     response.responseEntity = cartItemMapper.changeItemQuantityDto(changeItem)

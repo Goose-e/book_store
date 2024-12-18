@@ -15,8 +15,8 @@ import com.example.book_store.map.UserMapper
 import com.example.book_store.models.Cart
 import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.User
-import com.example.book_store.models.enum.RoleEnum.ADMIN
 import com.example.book_store.models.enum.RoleEnum.USER
+import com.example.book_store.models.enum.StatusEnum
 import com.example.book_store.models.enum.StatusEnum.CART_ACTUAL
 import com.example.book_store.models.enum.StatusEnum.USER_ACTUAL
 import com.example.book_store.repo.UserRepository
@@ -31,7 +31,6 @@ import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -54,8 +53,14 @@ class UserServiceImpl(
 ) : IUserService {
     override fun authenticateUser(loginRequest: LoginUserDto): ResponseEntity<*> {
 
-        val user: User? = userRepository.findByLogin(loginRequest.login)
-
+        val user: User? = userDao.findByLoginForReg(loginRequest.login)
+        val coreEntity = userDao.findEntByLogin(loginRequest.login)
+        if (coreEntity != null && coreEntity.status.getId() == 3) {
+            println(111111111111111111)
+            return ResponseEntity(
+                ResponseMessage("User was banned!"), HttpStatus.FORBIDDEN
+            )
+        }
         user?.let {
             val authentication = authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(loginRequest.login, loginRequest.password)
@@ -69,6 +74,32 @@ class UserServiceImpl(
                 ResponseMessage("User not found!"), BAD_REQUEST
             )
         }
+    }
+
+    override fun newUserStatus(newStatusDto: NewStatusDtoRequest): HttpResponseBody<NewStatusDto> {
+        val response: HttpResponseBody<NewStatusDto> = NewStatusResponse()
+        lateinit var changedUser: NewStatusDto
+        println(newStatusDto.userStatusId)
+        newStatusDto.login.let { login ->
+            userDao.findEntByLogin(login)?.let { ent ->
+                val userStatus = StatusEnum.getEnum(newStatusDto.userStatusId)
+                println(userStatus)
+
+                println(newStatusDto.login)
+                coreEntityDao.save(UserMapper.mapChangeUserStatus(ent, userStatus))
+                userDao.findByLogin(login)?.let {
+                    changedUser = UserMapper.mapUserToChangeUserDTO(it, ent)
+                    response.responseEntity = changedUser
+                    response.message = "User Status Changed Successfully "
+                }
+            }
+                ?: run {
+                    response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "User not found"))
+                    response.message = "User not found"
+                }
+        }
+        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
+        return response
     }
 
     override fun getAllUsers(): HttpResponseBody<AllUsersDto> {
@@ -89,7 +120,7 @@ class UserServiceImpl(
 
     override fun registerUser(newUserDto: NewUserRequestDto): HttpResponseBody<NewUserDto> {
         val response: HttpResponseBody<NewUserDto> = CreateUserResponse()
-        val userCandidate: User? = userRepository.findByLogin(newUserDto.login)
+        val userCandidate: User? = userDao.findByLoginForReg(newUserDto.login)
 
         userCandidate?.let {
             response.message = "User already exist"

@@ -27,7 +27,8 @@ import java.util.*
 class BookServiceImpl(
     val bookDao: BookDao,
     val coreEntityDao: CoreEntityDao,
-    val coreEntityService: CoreEntityService
+    val coreEntityService: CoreEntityService,
+    override val bookMapper: BookMapper
 ) : BookService {
 
     override fun addBook(bookRequestDto: CreateOrUpdateBookRequestDto): HttpResponseBody<CreatedBookDto> {
@@ -35,8 +36,9 @@ class BookServiceImpl(
         var modifiedBook: Book? = null
 
         bookRequestDto.bookCode?.let { code ->
-            bookDao.findByCode(code)?.let {
-                modifiedBook = BookMapper.toBook(it, bookRequestDto, code)
+            bookDao.findByCodeForBook(code)?.let {
+                modifiedBook =
+                    BookMapper.toBook(it, bookRequestDto, code, convertBase64ToByteArray(bookRequestDto.image))
                 bookDao.save(modifiedBook!!)
                 response.message = "book changed successfully!"
             } ?: run {
@@ -110,13 +112,21 @@ class BookServiceImpl(
         )
     }
 
+    override fun getAllBlockedBooks(): HttpResponseBody<ListBookDto> {
+        var response: HttpResponseBody<ListBookDto> = GetBookResponse()
+
+        val getBook: MutableCollection<GetBookDtoDB> = bookDao.findAllBlockedBooks()
+        response = getBookLogic(getBook,response)
+        return response
+    }
+
     override fun getBookByCode(bookRequestCodeDto: GetBookCodeRequestDto): HttpResponseBody<GetBookCodeDto> {
         val response: HttpResponseBody<GetBookCodeDto> = GetBookCodeResponse()
         lateinit var foundBooks: GetBookCodeDto
-        val getBook: Book? = bookDao.findByCode(bookRequestCodeDto.bookCode)
+        val getBook: GetBookDtoDB? = bookDao.findByCode(bookRequestCodeDto.bookCode)
         if (getBook != null) {
 
-            val bookDto = BookMapper.mapBookToBookDTO(getBook, convertImageToBase64(getBook.image))
+            val bookDto = BookMapper.mapBookToBookCodeDto(getBook, convertImageToBase64(getBook.image))
 
             foundBooks = GetBookCodeDto(
                 bookName = bookDto.bookName,
@@ -126,7 +136,9 @@ class BookServiceImpl(
                 genre = bookDto.genre,
                 image = bookDto.image,
                 bookDescription = bookDto.bookDescription,
-                quantity = bookDto.bookQuantity
+                quantity = bookDto.quantity,
+                bookStatusEnum = bookDto.bookStatusEnum,
+                bookPages = bookDto.bookPages
             )
             response.responseEntity = foundBooks
             response.message = "Book found"
@@ -146,26 +158,28 @@ class BookServiceImpl(
     }
 
     fun convertBase64ToByteArray(base64String: String?): ByteArray {
-        if (base64String != null) {
-            return Base64.getDecoder().decode(base64String)
-        } else {
-            return ByteArray(-1)
-        }
+        return base64String?.let {
+            val base64Data = it.replace("^data:image/\\w+;base64,".toRegex(), "")
+            Base64.getDecoder().decode(base64Data)
+        } ?: ByteArray(0)
     }
 
-    override fun changeBookStatus(changeBookStatusRequestDto: ChangeBookStatusRequestDto): HttpResponseBody<ChangeBookStatusDto> {
+    fun convertImageToBase64(image: ByteArray?): String? {
+        return image?.let { Base64.getEncoder().encodeToString(it) }
+    }
+
+    override fun changeBookStatus(bookCode: ChangeBookStatusRequestDto): HttpResponseBody<ChangeBookStatusDto> {
         val response: HttpResponseBody<ChangeBookStatusDto> = DelBookResponse()
         lateinit var deletedBook: ChangeBookStatusDto
-        changeBookStatusRequestDto.bookCode?.let { code ->
+        bookCode.bookCode?.let { code ->
             bookDao.findByCodeForDel(code)?.let { ent ->
-                coreEntityDao.save(BookMapper.mapDeleteEntToEnt(ent, changeBookStatusRequestDto))
-                bookDao.findByCode(code)?.let {
+                val bookStatus = StatusEnum.getEnum(bookCode.bookStatusId)
+                coreEntityDao.save(BookMapper.mapDeleteEntToEnt(ent, bookStatus))
+                bookDao.findByCodeForBook(code)?.let {
                     deletedBook = BookMapper.mapBookToDelBookDTO(it, ent)
                     response.responseEntity = deletedBook
                     response.message = "Book Status Changed Successfully "
-
                 }
-
             }
                 ?: run {
                     response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
@@ -176,9 +190,6 @@ class BookServiceImpl(
         return response
     }
 
-    fun convertImageToBase64(image: ByteArray?): String? {
-        return image?.let { Base64.getEncoder().encodeToString(it) }
-    }
 
     @Transactional
     override fun getBook(bookRequestDto: GetBookRequestDto): HttpResponseBody<ListBookDto> {
@@ -200,11 +211,7 @@ class BookServiceImpl(
         return response
     }
 
-
-    override fun getAllBooks(): HttpResponseBody<ListBookDto> {
-        val response: HttpResponseBody<ListBookDto> = GetBookResponse()
-
-        val getBook: MutableCollection<GetBookDtoDB> = bookDao.findAllBooks()
+    private fun getBookLogic(getBook:MutableCollection<GetBookDtoDB>,response:HttpResponseBody<ListBookDto>):HttpResponseBody<ListBookDto>{
         if (getBook.isNotEmpty()) {
             val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it, convertImageToBase64(it.image)) }
             response.responseEntity = ListBookDto(listBookDto = listBookDto)
@@ -219,6 +226,14 @@ class BookServiceImpl(
         } else {
             response.responseCode = OC_OK
         }
+        return response
+    }
+
+    override fun getAllBooks(): HttpResponseBody<ListBookDto> {
+        var response: HttpResponseBody<ListBookDto> = GetBookResponse()
+
+        val getBook: MutableCollection<GetBookDtoDB> = bookDao.findAllBooks()
+        response = getBookLogic(getBook,response)
         return response
 
     }

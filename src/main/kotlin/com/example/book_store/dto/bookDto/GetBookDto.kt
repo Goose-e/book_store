@@ -23,8 +23,9 @@ data class GetBookDto(
     val bookPrice: BigDecimal,
     val bookDescription: String,
     val bookName: String,
-    val bookStatusEnum: StatusEnum,
+    val bookStatusEnum: Int,
     val image: String?,
+    val bookPages: Int?,
     val code: String
 ) : Serializable
 
@@ -37,7 +38,10 @@ data class GetBookDtoDB(
     val bookName: String,
     val bookStatusEnum: StatusEnum,
     val image: ByteArray?,
-    val code: String
+    val bookPages: Int?,
+    val code: String,
+    val bookQuantity:Int,
+
 ) : Serializable
 
 data class GetBookCodeDto(
@@ -49,6 +53,8 @@ data class GetBookCodeDto(
     val bookCode: String,
     val image: String?,
     val quantity: Int,
+    val bookStatusEnum: Int,
+    val bookPages: Int?
 ) : ResponseDto
 
 data class ListBookDto(

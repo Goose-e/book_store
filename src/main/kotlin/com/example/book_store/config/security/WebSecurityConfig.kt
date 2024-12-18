@@ -49,7 +49,7 @@ class WebSecurityConfig(
             csrf { disable() }
             authorizeHttpRequests {
                 authorize("/api/v1/auth/**", permitAll)
-                authorize("/api/v1/user_management/**", hasAuthority(RoleEnum.ADMIN.name))
+                authorize("/api/v1/userManagement/**", hasAuthority(RoleEnum.ADMIN.name))
                 authorize("/api/v1/users/**", authenticated)
                 authorize("/api/v1/cart/**", authenticated)
                 authorize("/api/v1/order/**", authenticated)
