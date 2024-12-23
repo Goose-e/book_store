@@ -116,7 +116,7 @@ class BookServiceImpl(
         var response: HttpResponseBody<ListBookDto> = GetBookResponse()
 
         val getBook: MutableCollection<GetBookDtoDB> = bookDao.findAllBlockedBooks()
-        response = getBookLogic(getBook,response)
+        response = getBookLogic(getBook, response)
         return response
     }
 
@@ -211,7 +211,10 @@ class BookServiceImpl(
         return response
     }
 
-    private fun getBookLogic(getBook:MutableCollection<GetBookDtoDB>,response:HttpResponseBody<ListBookDto>):HttpResponseBody<ListBookDto>{
+    private fun getBookLogic(
+        getBook: MutableCollection<GetBookDtoDB>,
+        response: HttpResponseBody<ListBookDto>
+    ): HttpResponseBody<ListBookDto> {
         if (getBook.isNotEmpty()) {
             val listBookDto = getBook.map { BookMapper.mapBookFromListToBookDTO(it, convertImageToBase64(it.image)) }
             response.responseEntity = ListBookDto(listBookDto = listBookDto)
@@ -233,7 +236,7 @@ class BookServiceImpl(
         var response: HttpResponseBody<ListBookDto> = GetBookResponse()
 
         val getBook: MutableCollection<GetBookDtoDB> = bookDao.findAllBooks()
-        response = getBookLogic(getBook,response)
+        response = getBookLogic(getBook, response)
         return response
 
     }

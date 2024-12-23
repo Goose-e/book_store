@@ -7,16 +7,16 @@ enum class GenreEnum(
     private val genreCode: String,
     private val genreName: String
 ) {
-    NO_GENRE(0, "NO_GENRE", "No genre"),
-    FANTASY(1, "FANTASY", "Fantasy"),
-    SCIENCE_FICTION(2, "SCIENCE_FICTION", "Science Fiction"),
-    ROMANCE(3, "ROMANCE", "Romance"),
-    MYSTERY(4, "MYSTERY", "Mystery"),
-    HORROR(5, "HORROR", "Horror"),
-    THRILLER(6, "THRILLER", "Thriller"),
-    HISTORICAL(7, "HISTORICAL", "Historical"),
-    CHILDREN(8, "CHILDREN", "Children"),
-    YOUNG_ADULT(9, "YOUNG_ADULT", "Young Adult");
+    NO_GENRE(0, "NO_GENRE", "NO_GENRE"),
+    FANTASY(1, "FANTASY", "FANTASY"),
+    SCIENCE_FICTION(2, "SCIENCE_FICTION", "SCIENCE_FICTION"),
+    ROMANCE(3, "ROMANCE", "ROMANCE"),
+    MYSTERY(4, "MYSTERY", "MYSTERY"),
+    HORROR(5, "HORROR", "HORROR"),
+    THRILLER(6, "THRILLER", "THRILLER"),
+    HISTORICAL(7, "HISTORICAL", "HISTORICAL"),
+    CHILDREN(8, "CHILDREN", "CHILDREN"),
+    YOUNG_ADULT(9, "YOUNG_ADULT", "YOUNG_ADULT");
 
 
     companion object {

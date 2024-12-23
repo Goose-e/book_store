@@ -31,6 +31,7 @@ import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -38,6 +39,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
+import kotlin.math.log
 
 
 @Service
@@ -56,7 +58,6 @@ class UserServiceImpl(
         val user: User? = userDao.findByLoginForReg(loginRequest.login)
         val coreEntity = userDao.findEntByLogin(loginRequest.login)
         if (coreEntity != null && coreEntity.status.getId() == 3) {
-            println(111111111111111111)
             return ResponseEntity(
                 ResponseMessage("User was banned!"), HttpStatus.FORBIDDEN
             )
@@ -79,25 +80,29 @@ class UserServiceImpl(
     override fun newUserStatus(newStatusDto: NewStatusDtoRequest): HttpResponseBody<NewStatusDto> {
         val response: HttpResponseBody<NewStatusDto> = NewStatusResponse()
         lateinit var changedUser: NewStatusDto
-        println(newStatusDto.userStatusId)
-        newStatusDto.login.let { login ->
-            userDao.findEntByLogin(login)?.let { ent ->
-                val userStatus = StatusEnum.getEnum(newStatusDto.userStatusId)
-                println(userStatus)
-
-                println(newStatusDto.login)
-                coreEntityDao.save(UserMapper.mapChangeUserStatus(ent, userStatus))
-                userDao.findByLogin(login)?.let {
-                    changedUser = UserMapper.mapUserToChangeUserDTO(it, ent)
-                    response.responseEntity = changedUser
-                    response.message = "User Status Changed Successfully "
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+        val loginAmin = authentication.name
+        if (loginAmin.equals(newStatusDto.login)) {
+            response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "It`s you!"))
+            response.message = "Self harassment"
+        } else {
+            newStatusDto.login.let { login ->
+                userDao.findEntByLogin(login)?.let { ent ->
+                    val userStatus = StatusEnum.getEnum(newStatusDto.userStatusId)
+                    coreEntityDao.save(UserMapper.mapChangeUserStatus(ent, userStatus))
+                    userDao.findByLogin(login)?.let {
+                        changedUser = UserMapper.mapUserToChangeUserDTO(it, ent)
+                        response.responseEntity = changedUser
+                        response.message = "User Status Changed Successfully "
+                    }
                 }
+                    ?: run {
+                        response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "User not found"))
+                        response.message = "User not found"
+                    }
             }
-                ?: run {
-                    response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "User not found"))
-                    response.message = "User not found"
-                }
         }
+
         if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
         return response
     }

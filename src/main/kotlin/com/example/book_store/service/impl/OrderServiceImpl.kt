@@ -11,10 +11,8 @@ import com.example.book_store.dao.CartItemDao
 import com.example.book_store.dao.CoreEntityDao
 import com.example.book_store.dao.OrderDao
 import com.example.book_store.dto.HttpResponseBody
+import com.example.book_store.dto.bookDto.ChangeBookStatusDto
 import com.example.book_store.dto.cartItemDto.CreateOrderRequestDto
-import com.example.book_store.dto.cartItemDto.GetItemListDtoDB
-import com.example.book_store.dto.cartItemDto.GetItemListResponse
-import com.example.book_store.dto.cartItemDto.ListCartItemDto
 import com.example.book_store.dto.orderDto.*
 import com.example.book_store.map.BookMapper
 import com.example.book_store.map.CartItemMapper
@@ -24,8 +22,7 @@ import com.example.book_store.models.CoreEntity
 import com.example.book_store.models.Order
 import com.example.book_store.models.OrderItem
 import com.example.book_store.models.enum.StatusEnum
-import com.example.book_store.models.enum.StatusEnum.ORDER_ACTUAL
-import com.example.book_store.models.enum.StatusEnum.ORDER_ITEM_ACTUAL
+import com.example.book_store.models.enum.StatusEnum.*
 import com.example.book_store.service.*
 import org.dbs.validator.ErrorInfo
 import org.springframework.security.core.Authentication
@@ -34,6 +31,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDateTime.now
+import java.util.*
 
 @Service
 class OrderServiceImpl(
@@ -71,10 +69,6 @@ class OrderServiceImpl(
                         orderItemService.orderItemDao.findAllItems(cart.cartId)
                     if (cartItems.isNotEmpty()) {
                         val booksInCart: MutableCollection<Book> = cartItemDao.findAllBooksInCart(cart.cartId)
-                        cartItems.forEach { cartItem ->
-
-                        }
-
                         val orderItems = mutableListOf<OrderItem>()
                         val orderItemCoreEntities = mutableListOf<CoreEntity>()
                         cartItems.forEach { cartItem ->
@@ -86,7 +80,6 @@ class OrderServiceImpl(
                                     itemCoreEntity,
                                     orderId = order.orderId
                                 )
-
                             )
                             val ent = cartItemDao.findEntityByItemCode(cartItem.cartItemCode)
                             if (ent != null) {
@@ -164,6 +157,66 @@ class OrderServiceImpl(
             response.responseCode = OC_OK
         }
 
+        return response
+    }
+
+    fun convertImageToBase64(image: ByteArray?): String? {
+        return image?.let { Base64.getEncoder().encodeToString(it) }
+    }
+
+    override fun changeOrderStatus(orderDetailRequestDto: OrderChangeStatusRequest): HttpResponseBody<NewOrderStatus> {
+        val response: HttpResponseBody<NewOrderStatus> = OrderChangeStatus()
+        val orderStatusCode: String
+        lateinit var changedOrder: NewOrderStatus
+        println(orderDetailRequestDto.orderCode)
+        orderDetailRequestDto.orderCode.let { code ->
+            orderDao.getOrderByOrderEntCodeForChangeStatus(code)?.let { ent ->
+                val newStatus: StatusEnum = if (ent.status == StatusEnum.getEnumByCode("ORDER_ACTUAL")) {
+                    ORDER_CLOSED
+                } else {
+                    ORDER_ACTUAL
+                }
+                orderStatusCode = newStatus.getCode()
+                coreEntityDao.save(OrderMapper.mapDeleteEntToEnt(ent.coreEntity, newStatus))
+                changedOrder = OrderMapper.changeOrderDto(orderStatusCode)
+                response.responseEntity = changedOrder
+                response.message = "Order Status Changed Successfully "
+
+            }
+                ?: run {
+                    response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Book not found"))
+                    response.message = "Book not found"
+                }
+        }
+        if (response.errors.isNotEmpty()) response.responseCode = OC_BUGS else response.responseCode = OC_OK
+        return response
+    }
+
+    override fun getOrderDetails(orderDetailRequestDto: GetOrderDetailRequestDto): HttpResponseBody<ListOrderDetail> {
+        val response: HttpResponseBody<ListOrderDetail> = GetOrderListResponse()
+        var price: BigDecimal = BigDecimal.ZERO
+        orderDetailRequestDto.orderCode.let { orderCode ->
+            val orderItems: MutableCollection<GetOrderItemListDB> = orderDao.findOrderByOrderCode(orderCode)
+            if (orderItems.isNotEmpty()) {
+                val listBookDto = orderItems.map {
+                    price += it.bookPrice * BigDecimal.valueOf(it.itemQuantity.toLong())
+                    orderMapper.mapBookFromListToBookDTO(it, convertImageToBase64(it.image))
+                }
+                val orderStatus: StatusEnum = orderDao.getOrderStatusByCode(orderCode)
+                response.responseEntity =
+                    ListOrderDetail(listBookDto = listBookDto, price = price, orderStatus = orderStatus.getCode())
+                response.message = "Books"
+            } else {
+                response.message = "Order is empty"
+                response.errors.add(ErrorInfo(INVALID_ENTITY_ATTR, "Order is empty"))
+            }
+
+            if (response.errors.isNotEmpty()) {
+                response.responseCode = OC_BUGS
+            } else {
+                response.responseCode = OC_OK
+            }
+        }
         return response
     }
 
