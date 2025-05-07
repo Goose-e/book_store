@@ -1,5 +1,4 @@
 CREATE ROLE dev_book_store_admin WITH LOGIN CREATEDB ENCRYPTED PASSWORD 'fakedPassword';
-
 create sequence seq_action_id;
 
 alter sequence seq_action_id owner to dev_book_store_admin;
@@ -169,7 +168,8 @@ alter domain tstr500 owner to dev_book_store_admin;
 create domain tstr1000 as varchar(1000);
 
 alter domain tstr1000 owner to dev_book_store_admin;
-create table public.statuses_ref
+
+create table if not exists statuses_ref
 (
     status_id   bigint       not null
         primary key,
@@ -179,23 +179,23 @@ create table public.statuses_ref
     status_name varchar(120) not null
 );
 
-alter table public.statuses_ref
+alter table statuses_ref
     owner to dev_book_store_admin;
 
-create table public.core_entities
+create table if not exists core_entities
 (
     core_entity_id bigint    not null
         primary key,
     status_id      bigint
-        references public.statuses_ref,
+        references statuses_ref,
     create_date    timestamp not null,
     delete_date    timestamp
 );
 
-alter table public.core_entities
+alter table core_entities
     owner to dev_book_store_admin;
 
-create table public.roles_ref
+create table if not exists roles_ref
 (
     role_id   bigint       not null
         primary key,
@@ -205,43 +205,43 @@ create table public.roles_ref
     role_name varchar(100) not null
 );
 
-alter table public.roles_ref
+alter table roles_ref
     owner to dev_book_store_admin;
 
-create table public.users
+create table if not exists users
 (
     user_id      bigint       not null
         primary key
-        references public.core_entities,
+        references core_entities,
     login        varchar(20)  not null
         constraint login_unique
             unique,
     password     varchar(200) not null,
     user_age     smallint,
     user_role_id bigint       not null
-        references public.roles_ref
+        references roles_ref
 );
 
-alter table public.users
+alter table users
     owner to dev_book_store_admin;
 
-create table public.carts
+create table if not exists carts
 (
     cart_id    bigint       not null
         primary key
-        references public.core_entities,
+        references core_entities,
     user_id    bigint       not null
-        references public.users,
+        references users,
     cart_code  varchar(100) not null
         constraint code2_unique
             unique,
     cart_price numeric(22, 2)
 );
 
-alter table public.carts
+alter table carts
     owner to dev_book_store_admin;
 
-create table public.genre_ref
+create table if not exists genre_ref
 (
     genre_id   bigint       not null
         primary key,
@@ -251,16 +251,16 @@ create table public.genre_ref
     genre_name varchar(120) not null
 );
 
-alter table public.genre_ref
+alter table genre_ref
     owner to dev_book_store_admin;
 
-create table public.books
+create table if not exists books
 (
     book_id          bigint         not null
         primary key
-        references public.core_entities,
+        references core_entities,
     genre_id         bigint         not null
-        references public.genre_ref,
+        references genre_ref,
     book_publisher   varchar(120)   not null,
     book_price       numeric(22, 2) not null,
     book_description varchar(10000),
@@ -269,41 +269,42 @@ create table public.books
     book_name        varchar(120)   not null,
     book_code        varchar(100)   not null
         constraint code4_unique
-            unique
+            unique,
+    image            bytea
 );
 
-alter table public.books
+alter table books
     owner to dev_book_store_admin;
 
-create table public.cart_items
+create table if not exists cart_items
 (
     cart_item_id       bigint       not null
         constraint cart_item_pkey
             primary key
         constraint cart_item_cart_item_id_fkey
-            references public.core_entities,
+            references core_entities,
     book_id            bigint       not null
         constraint cart_item_book_id_fkey
-            references public.books,
+            references books,
     cart_id            bigint       not null
         constraint cart_item_cart_id_fkey
-            references public.carts,
+            references carts,
     cart_item_code     varchar(100) not null
         constraint code5_unique
             unique,
     cart_item_quantity integer
 );
 
-alter table public.cart_items
+alter table cart_items
     owner to dev_book_store_admin;
 
-create table public.orders
+create table if not exists orders
 (
     order_id    bigint         not null
         primary key
-        references public.core_entities,
+        references core_entities,
     user_id     bigint         not null
-        references public.users,
+        references users,
     address     varchar(120)   not null,
     order_price numeric(22, 2) not null,
     order_date  timestamp      not null,
@@ -312,26 +313,68 @@ create table public.orders
             unique
 );
 
-alter table public.orders
+alter table orders
     owner to dev_book_store_admin;
 
-create table public.order_items
+create table if not exists order_items
 (
-    order_items_id          bigint         not null
+    order_items_id    bigint         not null
         primary key
-        references public.core_entities,
-    book_id                 bigint         not null
-        references public.books,
-    order_id                bigint         not null
-        references public.orders,
-    order_item_code         varchar(100)   not null
+        references core_entities,
+    book_id           bigint         not null
+        references books,
+    order_id          bigint         not null
+        references orders,
+    order_item_code   varchar(100)   not null
         constraint code7_unique
             unique,
-    order_item_price        numeric(22, 2) not null,
-    order_items_amount      integer        not null,
-    order_items_total_price numeric(22, 2) not null
+    order_item_price  numeric(22, 2) not null,
+    order_item_amount integer        not null
 );
 
-alter table public.order_items
+alter table order_items
     owner to dev_book_store_admin;
+
+create or replace function update_cart_price() returns trigger
+    language plpgsql
+as
+$$
+BEGIN
+
+    UPDATE carts
+    SET cart_price = (
+        SELECT COALESCE(SUM(ci.cart_item_quantity * b.book_price), 0)
+        FROM cart_items ci
+                 JOIN books b ON ci.book_id = b.book_id
+                 JOIN core_entities ce ON ce.core_entity_id = ci.cart_item_id
+        WHERE ci.cart_id = NEW.cart_id
+          AND ce.status_id != 5
+    )
+    WHERE cart_id = NEW.cart_id;
+
+    RETURN NEW;
+END;
+$$;
+
+alter function update_cart_price() owner to postgres;
+
+create trigger cart_price_after_insert
+    after insert
+    on cart_items
+    for each row
+execute procedure update_cart_price();
+
+create trigger cart_price_after_update
+    after update
+    on cart_items
+    for each row
+execute procedure update_cart_price();
+
+create trigger cart_price_after_delete
+    after delete
+    on cart_items
+    for each row
+execute procedure update_cart_price();
+
+
 

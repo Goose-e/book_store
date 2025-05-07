@@ -46,6 +46,7 @@ class WebSecurityConfig(
     @Bean
     fun web(http: HttpSecurity): SecurityFilterChain {
         http {
+            cors { } // ← добавь сюда
             csrf { disable() }
             authorizeHttpRequests {
                 authorize("/api/v1/auth/**", permitAll)
@@ -58,7 +59,7 @@ class WebSecurityConfig(
                 authorize(anyRequest, denyAll)
             }
             exceptionHandling {
-                //  authenticationEntryPoint(unauthorizedHandler)
+                // authenticationEntryPoint(unauthorizedHandler)
             }
             sessionManagement {
                 sessionCreationPolicy = SessionCreationPolicy.STATELESS

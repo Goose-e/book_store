@@ -27,6 +27,7 @@ data class CreateOrUpdateBookRequestDto(
     val image: String?
 ) : Serializable
 
+
 data class CreatedBookDto(
     val genre: GenreEnum,
 

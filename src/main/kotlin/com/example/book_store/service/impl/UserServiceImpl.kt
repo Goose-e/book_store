@@ -44,7 +44,7 @@ import kotlin.math.log
 
 @Service
 class UserServiceImpl(
-    val authenticationManager: AuthenticationManager,
+        val authenticationManager: AuthenticationManager,
     val userRepository: UserRepository,
     val encoder: PasswordEncoder,
     val jwtProvider: JwtProvider,

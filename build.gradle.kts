@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     id("org.springframework.boot") version "3.2.3"
@@ -27,7 +28,10 @@ repositories {
     mavenCentral()
 }
 
+
+
 dependencies {
+
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -51,4 +55,13 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+tasks.getByName<Jar>("jar") {
+    enabled = true
+}
+tasks.getByName<BootJar>("bootJar") {
+    mainClass.set("com.example.book_store.BookStoreApplication")  // Указание основного класса
+}
+tasks.bootJar {
+    archiveFileName.set("my-application.jar")  // Устанавливаем имя для bootJar
 }
